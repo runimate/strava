@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>STRAVA OCR Minimal Tester</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
+  <style>
+    :root{ --fg:#111; --accent:#ff9000; }
+    body{ font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:16px; color:var(--fg) }
+    h1{ font-size:18px; margin:0 0 12px; }
+    .card{ border:2px solid #eee; border-radius:12px; padding:12px; max-width:780px }
+    .row{ display:flex; gap:10px; align-items:center; margin:8px 0 }
+    .btn{ height:44px; padding:0 14px; font-weight:800; border-radius:10px; border:2px solid #333; background:#fff; cursor:pointer }
+    .btn:active{ transform:scale(.99) }
+    .status{ color:var(--accent); font-weight:800; margin-left:8px }
+    .kv{ display:grid; grid-template-columns: 120px 1fr; gap:8px 14px; margin-top:10px }
+    .kv div:nth-child(odd){ font-weight:800; }
+    .preview{ max-width: 100%; max-height: 260px; display:block; margin-top:10px; border-radius:10px; border:1px solid #ddd }
+    code{ background:#fafafa; border:1px solid #eee; padding:2px 6px; border-radius:6px }
+  </style>
+</head>
+<body>
+  <h1>STRAVA OCR Minimal (Distance / Pace / Time)</h1>
+
+  <div class="card">
+    <div class="row">
+      <input id="file" type="file" accept="image/*"/>
+      <button id="run" class="btn">Run OCR</button>
+      <span id="status" class="status"></span>
+    </div>
+    <img id="preview" class="preview" alt="preview" />
+    <div class="kv">
+      <div>Distance</div><div id="out-distance">—</div>
+      <div>Pace</div><div id="out-pace">—</div>
+      <div>Time</div><div id="out-time">—</div>
+    </div>
+    <div style="margin-top:8px; font-size:12px; opacity:.8">
+      팁: STRAVA 캡처가 다크모드/투명 PNG여도 전처리에서 자동으로 대비를 맞춰요.
+    </div>
+  </div>
+
+  <script>
+    // ---------- Utils ----------
+    const zero2 = n => String(n).padStart(2,'0');
+    const normalize = s => (s||'')
+      .replace(/[\u2018\u2019\u2032\u2035]/g,"'")
+      .replace(/[\u201C\u201D\u2033]/g,'"')
+      .replace(/[·•]/g,'.')
+      .replace(/\u200B|\u00A0/g,' ')
+      .replace(/[ ]{2,}/g,' ')
+      .trim();
+
+    function parseTimeToSec(t){
+      if(!t) return NaN;
+      const a = t.split(':').map(x=>parseInt(x,10));
+      if(a.length===2) return a[0]*60 + a[1];
+      if(a.length===3) return a[0]*3600 + a[1]*60 + a[2];
+      return NaN;
+    }
+    const hmsFromSec = sec => {
+      if(!isFinite(sec)) return {H:null,M:null,S:null};
+      sec = Math.max(0, Math.round(sec));
+      return { H:Math.floor(sec/3600), M:Math.floor((sec%3600)/60), S:sec%60 };
+    };
+
+    // ---------- Canvas helpers ----------
+    function toCanvas(dataURL){
+      return new Promise(res=>{
+        const img = new Image();
+        img.onload = ()=> res({img, w:img.width, h:img.height});
+        img.src = dataURL;
+      });
+    }
+
+    // 전처리: 투명/다크 대응 + 이진화 + 흑글자/백배경으로 맞춤
+    async function preprocess(dataURL, scale=2.0, threshold=185){
+      const {img,w:W,h:H} = await toCanvas(dataURL);
+      const w = Math.round(W*scale), h = Math.round(H*scale);
+      const c = document.createElement('canvas'); c.width=w; c.height=h;
+      const g = c.getContext('2d', { willReadFrequently:true });
+      g.imageSmoothingEnabled = false;
+
+      // 투명 배경 → 검정 깔고 합성(흰 글자 대비 확보)
+      g.fillStyle = '#000'; g.fillRect(0,0,w,h);
+      g.drawImage(img, 0,0, w,h);
+
+      // 이진화
+      const im = g.getImageData(0,0,w,h), d = im.data;
+      let white=0, black=0;
+      for(let i=0;i<d.length;i+=4){
+        const gray = d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114;
+        const v = gray > threshold ? 255 : 0;
+        d[i]=d[i+1]=d[i+2]=v;
+        v===255 ? white++ : black++;
+      }
+      g.putImageData(im,0,0);
+
+      // 배경이 어두우면 반전
+      if(black>white){
+        const im2 = g.getImageData(0,0,w,h), d2 = im2.data;
+        for(let i=0;i<d2.length;i+=4){
+          d2[i]=255-d2[i]; d2[i+1]=255-d2[i+1]; d2[i+2]=255-d2[i+2];
+        }
+        g.putImageData(im2,0,0);
+      }
+      return c.toDataURL('image/png');
+    }
+
+    // 특정 영역 OCR(싱글 라인)
+    async function ocrLine(imgDataURL, rect, opts){
+      const {img} = await toCanvas(imgDataURL);
+      const c = document.createElement('canvas');
+      c.width = rect.w; c.height = rect.h;
+      const ctx = c.getContext('2d', { willReadFrequently:true });
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, rect.x, rect.y, rect.w, rect.h, 0,0, rect.w, rect.h);
+      const { data } = await Tesseract.recognize(c.toDataURL('image/png'), 'eng', opts);
+      return (data.text||'').trim();
+    }
+
+    // ---------- STRAVA label detection ----------
+    const FIND_OPTS = { preserve_interword_spaces:'1', tessedit_pageseg_mode: Tesseract.PSM.AUTO };
+    const LINE_NUM  = { tessedit_pageseg_mode: Tesseract.PSM.SINGLE_LINE, tessedit_char_whitelist:'0123456789.,:' };
+    const LINE_MIX  = { tessedit_pageseg_mode: Tesseract.PSM.SINGLE_LINE, tessedit_char_whitelist:'0123456789:/kmshm ' };
+
+    function findLabels(words, names){
+      const want = new Set(names.map(s=>s.toLowerCase()));
+      const out = {};
+      (words||[]).forEach(w=>{
+        const t = (w.text||'').trim().toLowerCase();
+        if(want.has(t)){
+          out[t] = {
+            x0: Math.floor(w.bbox.x0), y0: Math.floor(w.bbox.y0),
+            x1: Math.floor(w.bbox.x1), y1: Math.floor(w.bbox.y1)
+          };
+        }
+      });
+      return out;
+    }
+    function rectBelow(label, W, H){
+      const x0 = Math.max(0, label.x0);
+      const x1 = Math.min(W, label.x1);
+      const y0 = Math.min(H, label.y1 + Math.round((label.y1-label.y0)*0.25));
+      const h  = Math.round((label.y1-label.y0) * 2.2);
+      const y1 = Math.min(H, y0+h);
+      return { x:x0, y:y0, w:x1-x0, h:y1-y0 };
+    }
+
+    // ---------- Robust parsers ----------
+    function parseAnyPace(raw){
+      const t = normalize(raw);
+      // 5:12 /km, 5'12, 5:12/km, 5:12 min/km, 5:12 per km
+      const m = t.match(/(\d{1,2})\s*[:'’]\s*(\d{2})\s*(?:\/\s*km|per\s*km|min\/km)?/i)
+              || t.match(/\b(\d{1,2})\s*[:]\s*(\d{2})\b/);
+      if(!m) return { min:null, sec:null, raw:null };
+      return { min:+m[1], sec:+m[2], raw:`${+m[1]}:${zero2(+m[2])}` };
+    }
+    function parseAnyTime(raw){
+      const t = normalize(raw);
+      let m = t.match(/\b(\d{1,2}):(\d{2}):(\d{2})\b/);
+      if(m) return { H:+m[1], M:+m[2], S:+m[3], raw:`${+m[1]}:${zero2(+m[2])}:${zero2(+m[3])}` };
+      m = t.match(/\b(\d{1,2})\s*h\s*(\d{1,2})\s*m(?:\s*(\d{1,2})\s*s)?/i);
+      if(m){ const H=+m[1], M=+m[2], S=+(m[3]||0); return { H,M,S,raw:`${H}:${zero2(M)}:${zero2(S)}` }; }
+      m = t.match(/\b(\d{1,2}):(\d{2})\b/);
+      if(m) return { H:0, M:+m[1], S:+m[2], raw:`${+m[1]}:${zero2(+m[2])}` };
+      return { H:null, M:null, S:null, raw:null };
+    }
+    function parseAnyKm(raw){
+      const t = normalize(raw);
+      const idx = t.search(/\bkm\b/i);
+      if(idx >= 0){
+        const before = t.slice(Math.max(0, idx-50), idx);
+        const after  = t.slice(idx, idx+50);
+        const m2 = (before.match(/(\d{1,3})\s*[.,]\s*(\d{1,2})/) || after.match(/(\d{1,3})\s*[.,]\s*(\d{1,2})/));
+        if(m2) return parseFloat(`${m2[1]}.${m2[2]}`);
+        const m1 = (before.match(/\b(\d{1,3})\b/) || after.match(/\b(\d{1,3})\b/));
+        if(m1) return parseFloat(m1[1]);
+      }
+      const m = t.match(/\b(\d{1,3}[.,]\d{1,2})\b/);
+      return m ? parseFloat(m[1].replace(',','.')) : null;
+    }
+
+    // ---------- Main STRAVA pipeline ----------
+    async function parseStrava(dataURL){
+      // 전처리 & 전체 스캔
+      const pre = await preprocess(dataURL, 2.2, 180);
+      const full = await Tesseract.recognize(pre, 'eng', FIND_OPTS);
+      const words = full.data?.words || [];
+      const allText = full.data?.text || '';
+      const { w, h } = await toCanvas(pre);
+
+      const labels = findLabels(words, ['Distance','Pace','Time']);
+
+      // 1) 라벨 기반 추출
+      let km=null, paceMin=null, paceSec=null, timeH=null, timeM=null, timeS=null, timeRaw=null;
+
+      if(labels['distance']){
+        const r = rectBelow(labels['distance'], w, h);
+        const tx = await ocrLine(pre, r, LINE_NUM);
+        const m = tx.match(/\b(\d{1,3}[.,]\d{1,2})\b/);
+        if(m) km = parseFloat(m[1].replace(',','.'));
+      }
+      if(labels['pace']){
+        const r = rectBelow(labels['pace'], w, h);
+        const tx = await ocrLine(pre, r, LINE_MIX);
+        const p = parseAnyPace(tx);
+        if(p.min!=null){ paceMin=p.min; paceSec=p.sec; }
+      }
+      if(labels['time']){
+        const r = rectBelow(labels['time'], w, h);
+        const tx = await ocrLine(pre, r, LINE_MIX);
+        const t = parseAnyTime(tx);
+        if(t.raw){ timeH=t.H; timeM=t.M; timeS=t.S; timeRaw=t.raw; }
+      }
+
+      // 2) 전역 텍스트 fallback
+      if(km==null){
+        const k = parseAnyKm(allText);
+        if(k!=null) km = k;
+      }
+      if(paceMin==null || paceSec==null){
+        const p = parseAnyPace(allText);
+        if(p.min!=null){ paceMin=p.min; paceSec=p.sec; }
+      }
+      if(timeRaw==null){
+        const t = parseAnyTime(allText);
+        if(t.raw){ timeH=t.H; timeM=t.M; timeS=t.S; timeRaw=t.raw; }
+      }
+
+      // 3) 삼각검증: km & time이 있으면 pace 검증/보정
+      if(isFinite(km) && km>0 && (timeH!=null || timeM!=null || timeS!=null)){
+        const timeSec = (timeH||0)*3600 + (timeM||0)*60 + (timeS||0);
+        if(isFinite(timeSec) && timeSec>0){
+          const paceCalc = timeSec / km; // sec/km
+          if(paceMin==null || paceSec==null){
+            // pace가 없으면 계산값을 사용
+            const mm = Math.floor(paceCalc/60), ss = Math.round(paceCalc%60);
+            paceMin = mm; paceSec = ss;
+          }else{
+            // 있으면 너무 어긋날 때 보정(>6초이거나 5% 초과)
+            const paceOCR = paceMin*60 + paceSec;
+            const diff = Math.abs(paceOCR - paceCalc);
+            if(diff > 6 && diff / Math.max(1, paceOCR) > 0.05){
+              const adj = Math.round(paceCalc);
+              paceMin = Math.floor(adj/60); paceSec = adj%60;
+            }
+          }
+        }
+      }
+
+      return {
+        km: (isFinite(km) ? km : null),
+        paceMin: (isFinite(paceMin) ? paceMin : null),
+        paceSec: (isFinite(paceSec) ? paceSec : null),
+        timeH: (isFinite(timeH) ? timeH : null),
+        timeM: (isFinite(timeM) ? timeM : null),
+        timeS: (isFinite(timeS) ? timeS : null),
+        timeRaw: timeRaw || (()=>{
+          if(timeH==null && timeM==null && timeS==null) return null;
+          const sec = (timeH||0)*3600 + (timeM||0)*60 + (timeS||0);
+          const {H,M,S} = hmsFromSec(sec);
+          return H>0 ? `${H}:${zero2(M)}:${zero2(S)}` : `${M}:${zero2(S)}`;
+        })()
+      };
+    }
+
+    // ---------- UI wiring ----------
+    const $ = sel => document.querySelector(sel);
+    const $status = $('#status');
+    const $preview = $('#preview');
+
+    let currentImageData = null;
+    $('#file').addEventListener('change', e=>{
+      const f = e.target.files?.[0];
+      if(!f){ currentImageData=null; $preview.src=''; return; }
+      const reader = new FileReader();
+      reader.onload = () => { currentImageData = reader.result; $preview.src = reader.result; };
+      reader.readAsDataURL(f);
+    });
+
+    $('#run').addEventListener('click', async ()=>{
+      if(!currentImageData){ $status.textContent='이미지를 선택하세요.'; return; }
+      $status.textContent = 'OCR…';
+      $('#out-distance').textContent = '—';
+      $('#out-pace').textContent = '—';
+      $('#out-time').textContent = '—';
+      try{
+        const r = await parseStrava(currentImageData);
+
+        // 출력 포맷팅
+        const distTxt = (r.km!=null) ? `${(Math.floor(r.km*10)/10).toFixed(r.km<10?2:1)} km` : '—';
+        const paceTxt = (r.paceMin!=null && r.paceSec!=null) ? `${r.paceMin}:${zero2(r.paceSec)} /km` : '—';
+        const timeTxt = r.timeRaw || (()=> {
+          if(r.timeH==null && r.timeM==null && r.timeS==null) return '—';
+          const H=r.timeH||0, M=r.timeM||0, S=r.timeS||0;
+          return H>0 ? `${H}:${zero2(M)}:${zero2(S)}` : `${M}:${zero2(S)}`;
+        })();
+
+        $('#out-distance').textContent = distTxt;
+        $('#out-pace').textContent = paceTxt;
+        $('#out-time').textContent = timeTxt;
+        $status.textContent = 'Done';
+      }catch(err){
+        console.error(err);
+        $status.textContent = 'Error';
+      }
+    });
+  </script>
+</body>
+</html>
