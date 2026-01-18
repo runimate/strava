@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>RUNIMATE v2.1</title>
+  <title>RUNIMATE v2.0</title>
   
   <link rel="stylesheet" href="./styles.css" />
  
@@ -23,7 +23,7 @@
       <a class="title title-link" href="#" onclick="window.location.reload(); return false;" title="새로고침">
         RUNIMATE 
       </a>
-      <span class="version" id="btnHiddenManual">v.2.1</span>
+      <span class="version" id="btnHiddenManual">v.2.0</span>
       <div class="author">by JS @runarchive.js</div>
     </header>
 
@@ -270,7 +270,7 @@
     <button class="run-btn" id="btnRun">RUN</button>
   </div>
 
-  <div class="screen-overlay" id="garminLoginScreen" aria-hidden="true">
+  <div class="screen-overlay garmin-login" id="garminLoginScreen" aria-hidden="true">
     <button class="screen-close close-big" data-close="garminLoginScreen" aria-label="Close">×</button>
     <div class="garmin-login-wrap">
       <div class="garmin-login-title"><div class="gc-big">GARMIN<br />CONNECT</div></div>
@@ -307,7 +307,7 @@
   </div>
 
   <div class="screen-overlay select-workout" id="garminSelectScreen" aria-hidden="true">
-    <button class="screen-close" data-close="garminSelectScreen" aria-label="Close">×</button>
+    <button class="screen-close close-big" data-close="garminSelectScreen" aria-label="Close">×</button>
     <div class="select-wrap">
       <div class="select-title">Select<br />Workout</div>
       <div class="select-list" id="workoutList"></div>
@@ -903,7 +903,6 @@
         el.btnFontColorAuto.classList.toggle('active', state.fontColor === 'auto');
         el.btnFontColorPicker.classList.toggle('active', state.fontColor !== 'auto');
         
-        // [수정된 부분] 컬러 버튼 배경색 피드백
         if (state.fontColor !== 'auto') {
             el.btnFontColorPicker.style.background = state.fontColor;
         } else {
