@@ -135,6 +135,19 @@ body.no-scroll{ overflow: hidden; }
 .ocr-status{ margin-top: 8px; font-size: 11px; color:#333; display:none; }
 .ocr-status.show{ display:block; }
 
+/* LOGIN BUTTON WRAPS (FIXED) */
+#garminConnectBtnWrap, #stravaConnectBtnWrap {
+    width: 100%;
+    padding: 20px 0 !important; /* 상하 패딩 축소 */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important; /* 상하 간격 통일 */
+    text-align: center !important;
+}
+#garminConnectBtnWrap > *, #stravaConnectBtnWrap > * { margin: 0 !important; }
+
 /* MONTH PICKER */
 .month-block{ margin-top: 12px; display:flex; flex-direction:column; align-items: center; justify-content: center; margin-bottom: 24px; }
 .month-label{ font-size: 12px; font-weight: 700; opacity: 0.6; margin-bottom: 8px; }
@@ -145,12 +158,15 @@ body.no-scroll{ overflow: hidden; }
 .preview.bg-white{ background:#fff; color:#000; }
 .preview.bg-black{ background:#000; color:#fff; }
 
+/* [FIX] Type 2 (가로)일 때 너비 100% 강제 */
+.preview.type2 { width: 100% !important; max-width: 100% !important; }
+
 .result-label, .data-label{ font-family: inherit; font-size: var(--ui-label-size); line-height: 1; opacity: 0.8; margin-bottom: var(--ui-label-to-value-gap); display:block; }
 .result-value, .data-value{ font-family: inherit; font-size: var(--ui-value-size); line-height: 1; font-weight: 900; display:flex; align-items:flex-end; }
 .result-value > span, .data-value > span { display:inline-block; transform-origin: left bottom; }
 
 /* =================================================================
-   [핵심] PREVIEW ALIGNMENT & LAYOUT LOGIC
+   PREVIEW ALIGNMENT & LAYOUT LOGIC
    ================================================================= */
 
 /* --- Type 1 (Stack) --- */
