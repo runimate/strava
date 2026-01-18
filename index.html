@@ -588,11 +588,10 @@
       if(el.pvPaceMonthlyT2) el.pvPaceMonthlyT2.textContent = fmtPacePreview(m.paceSec);
       if(el.pvTimeMonthlyT2) el.pvTimeMonthlyT2.textContent = fmtTimePreview(m.timeSec);
       
-      // Update Card texts if needed... (omitted for brevity, same as before)
+      // Update Card texts if needed...
       if(state.dataType === 'garmin' || state.dataType === 'strava') {
          const cardSrc = (state.dataType === 'garmin') ? state.garmin : state.strava;
          if(cardSrc && cardSrc.date !== '-') {
-             // ... sync text ...
               if(state.dataType === 'garmin') {
                  if($('#garminDateText')) $('#garminDateText').textContent = cardSrc.date;
                  if($('#garminDistanceText')) $('#garminDistanceText').textContent = fmtKmPreview(cardSrc.km);
@@ -607,13 +606,13 @@
          }
       }
 
-      // [NEW] Apply Styles (Align & Color)
+      // Apply Styles (Align & Color)
       applyPreviewStyles();
       
       requestAnimationFrame(applyFitPreview);
     }
     
-    // [NEW] Helper to apply Align and Color
+    // Helper to apply Align and Color
     function applyPreviewStyles() {
         const pvs = [el.previewDaily, el.previewMonthly];
         pvs.forEach(pv => {
@@ -677,7 +676,6 @@
     }
 
     // --- GARMIN LOGIC ---
-    // (Existing Garmin logic...)
     el.tabGarmin.addEventListener('click', () => {
       state.dataType = 'garmin'; applyDataType(); updatePreview();
       if (realGarminWorkouts.length > 0) { 
@@ -690,15 +688,139 @@
     });
     el.btnOpenGarminLogin.addEventListener('click', () => { el.garminError.style.display = 'none'; openScreen('garminLoginScreen'); });
 
-    // (Garmin Fetch Logic Omitted for brevity - same as input)
     async function fetchGarminData() {
-       // ... Same logic ...
-       // Mock for safety if not connected
-       state.garmin = { date:'2025.01.18', km:10.5, paceSec:330, timeSec:3465 };
-       applyDataType(); updatePreview();
-       closeScreen('garminLoginScreen');
+      const email = $('#garminEmail').value;
+      const password = $('#garminPassword').value;
+      const btn = $('#btnGarminRealSync');
+      const errorMsg = $('#garminError');
+
+      if (!email || !password) {
+        if(errorMsg) {
+            errorMsg.textContent = "Please enter email and password.";
+            errorMsg.style.display = 'block';
+        }
+        return;
+      }
+      if(errorMsg) errorMsg.style.display = 'none';
+
+      btn.innerText = "Connecting...";
+      btn.disabled = true; btn.style.opacity = '0.7';
+
+      try {
+        const SERVER_URL = "https://runimate-production.up.railway.app/api/garmin";
+
+        const res = await fetch(SERVER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        
+        if (!res.ok) {
+            throw new Error(`Server Error: ${res.status}`);
+        }
+
+        const result = await res.json();
+
+        if (result.success) {
+          realGarminWorkouts = result.data;
+          
+          if (realGarminWorkouts.length > 0) {
+             state.garmin = realGarminWorkouts[0];
+             state.dataType = 'garmin';
+             applyDataType(); updatePreview();
+             
+             if(el.garminConnectBtnWrap) el.garminConnectBtnWrap.style.display = 'none';
+             if(el.garminCard) el.garminCard.style.display = 'flex';
+             closeScreen('garminLoginScreen');
+             renderWorkoutList('garmin');
+             openScreen('garminSelectScreen');
+          } else {
+             if(errorMsg) { errorMsg.textContent = "Login success, but no activities found."; errorMsg.style.display = 'block'; }
+          }
+        } else {
+          if(errorMsg) { errorMsg.textContent = "Login Failed: Check your info."; errorMsg.style.display = 'block'; }
+        }
+      } catch (err) {
+        console.error(err);
+        if(errorMsg) { errorMsg.textContent = "Connection Error."; errorMsg.style.display = 'block'; }
+        alert(`서버 연결 실패!\n(에러: ${err.message})`);
+      } finally {
+        if(btn) { btn.innerText = "Sign-In"; btn.disabled = false; btn.style.opacity = '1'; }
+      }
     }
+    
     if(el.btnGarminRealSync) el.btnGarminRealSync.addEventListener('click', fetchGarminData);
+
+    function renderWorkoutList(kind = 'garmin') {
+      const listContainer = el.workoutList;
+      listContainer.innerHTML = ''; 
+      
+      const list = (kind === 'strava') 
+        ? (realStravaWorkouts.length > 0 ? realStravaWorkouts : generateMockWorkouts())
+        : (realGarminWorkouts.length > 0 ? realGarminWorkouts : generateMockWorkouts());
+
+      list.forEach((w) => {
+        const btn = document.createElement('div'); 
+        btn.className = 'workout-item'; 
+        btn.innerHTML = `
+          <div class="w-left">
+            <div class="w-date">${w.date}</div>
+            <div class="w-stats">
+              <span>${fmtKmPreview(w.km)}</span>
+              <span>${fmtPaceResult(w.paceSec)}</span>
+              <span>${fmtTimeResult(w.timeSec)}</span>
+            </div>
+          </div>
+          <div class="w-arrow-wrap">
+             <div class="w-arrow">→</div>
+          </div>
+        `;
+        
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            if (kind === 'strava') { 
+                state.strava = { ...w }; 
+                state.dataType = 'strava'; 
+                if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.style.display = 'none';
+                if(el.stravaCard) el.stravaCard.style.display = 'flex';
+            } else { 
+                state.garmin = { ...w }; 
+                state.dataType = 'garmin'; 
+                if(el.garminConnectBtnWrap) el.garminConnectBtnWrap.style.display = 'none';
+                if(el.garminCard) el.garminCard.style.display = 'flex';
+            }
+            applyDataType(); 
+            updatePreview(); 
+            closeScreen('garminSelectScreen'); 
+        };
+        listContainer.appendChild(btn);
+      });
+    }
+    el.btnGarminList.addEventListener('click', (e) => { e.stopPropagation(); renderWorkoutList('garmin'); openScreen('garminSelectScreen'); });
+
+    // --- OTHER TABS ---
+    if(el.tabStrava) el.tabStrava.addEventListener('click', () => { 
+        state.dataType = 'strava'; 
+        applyDataType(); 
+        updatePreview(); 
+        
+        if (realStravaWorkouts.length > 0) {
+             if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.style.display = 'none';
+             if(el.stravaCard) el.stravaCard.style.display = 'flex';
+        } else {
+             if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.style.display = 'block';
+             if(el.stravaCard) el.stravaCard.style.display = 'none';
+        }
+    });
+
+    if(el.tabNrc) el.tabNrc.addEventListener('click', () => { state.dataType = 'nrc'; applyDataType(); updatePreview(); });
+    
+    // [Manual 탭 클릭 시]
+    if(el.tabManual) el.tabManual.addEventListener('click', () => { 
+        state.dataType = 'manual'; 
+        applyDataType(); 
+        updatePreview(); 
+    });
 
     // --- APPLY HELPERS ---
     function applyRecordType() {
@@ -715,7 +837,7 @@
       if (state.layout === 'type1') { if (m1) m1.style.display = 'flex'; if (m2) m2.style.display = 'none'; } 
       else { if (m1) m1.style.display = 'none'; if (m2) m2.style.display = 'flex'; }
 
-      // [NEW] Disable Align control if Monthly
+      // Disable Align control if Monthly
       if (!isDaily) {
          el.alignControlPanel.classList.add('disabled');
          // Monthly is always left aligned visually in preview content logic
@@ -781,20 +903,17 @@
       });
     }
 
-    // [NEW] Apply Align
     function applyAlign() {
         el.btnAlignLeft.classList.toggle('active', state.align === 'left');
         el.btnAlignCenter.classList.toggle('active', state.align === 'center');
+        // Re-apply config to pick up _l vs _c values
+        applyUIConfigToRoot(state);
         updatePreview();
     }
     
-    // [NEW] Apply Font Color
     function applyFontColor() {
         el.btnFontColorAuto.classList.toggle('active', state.fontColor === 'auto');
         el.btnFontColorPicker.classList.toggle('active', state.fontColor !== 'auto');
-        if(state.fontColor !== 'auto') {
-            // Optional: Show color on picker button border?
-        }
         updatePreview();
     }
 
@@ -805,7 +924,7 @@
     el.btnType1.addEventListener('click', () => { state.layout = 'type1'; applyLayout(); });
     el.btnType2.addEventListener('click', () => { state.layout = 'type2'; applyLayout(); });
     
-    // [NEW] Align Events
+    // Align Events
     el.btnAlignLeft.addEventListener('click', () => { 
         if(state.recordType === 'monthly') return;
         state.align = 'left'; applyAlign(); 
@@ -818,7 +937,7 @@
     el.btnBgWhite.addEventListener('click', () => { state.bg = 'white'; applyBG(); });
     el.btnBgBlack.addEventListener('click', () => { state.bg = 'black'; applyBG(); });
     
-    // [NEW] Font Color Events
+    // Font Color Events
     el.btnFontColorAuto.addEventListener('click', () => {
         state.fontColor = 'auto';
         applyFontColor();
@@ -848,7 +967,93 @@
        b.addEventListener('click', () => { state.font = b.dataset.font; applyFont(); });
     });
 
-    // ... (Existing NRC, Manual, Month Pickers, Run Button logic - kept intact)
+    // NRC / OCR
+    if (el.btnUploadNrc && el.fileNrc) {
+        el.btnUploadNrc.addEventListener('click', () => { el.fileNrc.value = ''; el.fileNrc.click(); });
+        el.fileNrc.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (el.ocrStatus) { el.ocrStatus.style.display = 'block'; el.ocrStatus.textContent = 'Analyzing...'; el.ocrStatus.style.color = '#333'; }
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    if (typeof window.extractAll !== 'function') throw new Error('OCR engine not loaded.');
+                    const result = await window.extractAll(event.target.result, { recordType: state.recordType });
+                    const km = Number(result.km || 0); const pMin = Number(result.paceMin || 0); const pSec = Number(result.paceSec || 0);
+                    const tH = Number(result.timeH || 0); const tM = Number(result.timeM || 0); const tS = Number(result.timeS || 0);
+                    const pace = (pMin * 60) + pSec; const time = (tH * 3600) + (tM * 60) + tS;
+                    
+                    if (state.recordType === 'daily') {
+                        state.daily.km = km; state.daily.paceSec = pace; state.daily.timeSec = time;
+                    } else {
+                        state.monthly.km = km; state.monthly.paceSec = pace; state.monthly.timeSec = time;
+                        if (result.runs) state.monthly.runs = result.runs;
+                    }
+                    state.dataType = 'nrc'; applyDataType(); updatePreview();
+                    if (el.ocrStatus) { el.ocrStatus.textContent = 'DONE!'; el.ocrStatus.style.color = '#00C800'; }
+                } catch (err) {
+                    console.error(err);
+                    if (el.ocrStatus) { el.ocrStatus.textContent = 'Error: ' + err.message; el.ocrStatus.style.color = 'red'; }
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Month Picker
+    if(el.btnMonthPick) el.btnMonthPick.addEventListener('click', () => {
+        if(el.monthYearText) el.monthYearText.textContent = state.monthly.year;
+        buildMonthGrid(); openScreen('monthPickerScreen');
+    });
+
+    function buildMonthGrid() {
+      el.monthGrid.innerHTML = '';
+      for (let i = 1; i <= 12; i++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'month-cell';
+        b.textContent = monthNameCap(i);
+        if(i === state.monthly.month) b.classList.add('active');
+        b.addEventListener('click', () => {
+          state.monthly.month = i; updatePreview(); closeScreen('monthPickerScreen');
+        });
+        el.monthGrid.appendChild(b);
+      }
+    }
+    if(el.monthPrevYear) el.monthPrevYear.addEventListener('click', () => { state.monthly.year -= 1; el.monthYearText.textContent = state.monthly.year; updatePreview(); });
+    if(el.monthNextYear) el.monthNextYear.addEventListener('click', () => { state.monthly.year += 1; el.monthYearText.textContent = state.monthly.year; updatePreview(); });
+
+    // Manual Input
+    el.chipDistance.addEventListener('click', () => {
+      $('#modalTitle').textContent = 'DISTANCE';
+      el.formDistance.style.display = 'block'; el.formPace.style.display = 'none';
+      el.inputDistance.value = ''; openScreen('modalOverlay'); setTimeout(() => el.inputDistance.focus(), 100);
+    });
+    el.chipPace.addEventListener('click', () => {
+      $('#modalTitle').textContent = 'PACE';
+      el.formDistance.style.display = 'none'; el.formPace.style.display = 'block';
+      el.inputPaceMin.value = ''; el.inputPaceSec.value = ''; openScreen('modalOverlay'); setTimeout(() => el.inputPaceMin.focus(), 100);
+    });
+    el.modalClose.addEventListener('click', () => closeScreen('modalOverlay'));
+    
+    function recalcManualTime() {
+        if(state.manual.km > 0 && state.manual.paceSec > 0) {
+            state.manual.timeSec = state.manual.km * state.manual.paceSec;
+            if($('#manualTimeText')) $('#manualTimeText').textContent = fmtTimePreview(state.manual.timeSec);
+            updatePreview();
+        }
+    }
+
+    el.formDistance.addEventListener('submit', (e) => {
+      e.preventDefault(); const val = parseFloat(el.inputDistance.value);
+      if (!isNaN(val)) { state.manual.km = val; el.manualDistanceText.textContent = val.toFixed(2); recalcManualTime(); closeScreen('modalOverlay'); }
+    });
+    el.formPace.addEventListener('submit', (e) => {
+      e.preventDefault(); const m = parseInt(el.inputPaceMin.value) || 0; const s = parseInt(el.inputPaceSec.value) || 0;
+      const total = m * 60 + s;
+      if (total > 0) { state.manual.paceSec = total; el.manualPaceText.textContent = fmtPacePreview(total); recalcManualTime(); closeScreen('modalOverlay'); }
+    });
+
     // [Manual Hidden Trigger]
     let hiddenClickCount = 0;
     if(el.btnHiddenManual) {
@@ -856,10 +1061,7 @@
             hiddenClickCount++;
             if(hiddenClickCount === 5) {
                 alert("Developer Mode: Manual Tab Enabled");
-                if(el.tabManual) {
-                    el.tabManual.classList.remove('manual-hidden');
-                    el.tabManual.classList.add('manual-show');
-                }
+                if(el.tabManual) { el.tabManual.classList.remove('manual-hidden'); el.tabManual.classList.add('manual-show'); }
             }
         });
     }
@@ -867,14 +1069,13 @@
     // --- RUN BUTTON: Result ---
     function buildResultDOM() {
        el.resultWrap.className = `result-wrap ${state.layout}`;
-       // [NEW] Add Align class
+       // Add Align class
        if (state.recordType === 'daily') {
            el.resultWrap.classList.add(`align-${state.align}`);
        } else {
-           el.resultWrap.classList.add('monthly'); // Monthly forces specific layout
+           el.resultWrap.classList.add('monthly'); 
        }
        
-       // ... existing buildResultDOM logic ...
        let d = (state.recordType === 'daily') ? 
            ((state.dataType==='garmin' && state.garmin) || (state.dataType==='strava' && state.strava) || (state.dataType==='nrc' && state.daily) || state.manual) 
            : state.monthly;
@@ -894,14 +1095,11 @@
             <span class="result-value"><span id="rvTime"></span></span>
           </div>
         `;
-        // [NEW] Apply Color to Result
         if(state.fontColor !== 'auto') el.resultBlock.style.color = state.fontColor;
         else el.resultBlock.style.color = '';
-
         return { km: +(d.km || 0), paceSec: +(d.paceSec || 0), timeSec: +(d.timeSec || 0) };
       } else {
         const monthLine = `${monthName(d.month)} ${d.year}`;
-        // M1 / M2 Logic (same as before)
         if (state.layout === 'type1') {
           el.resultBlock.innerHTML = `
             <div class="m1-month">${monthLine}</div>
@@ -925,20 +1123,17 @@
         }
         if(state.fontColor !== 'auto') el.resultBlock.style.color = state.fontColor;
         else el.resultBlock.style.color = '';
-
         return { km: +(d.km || 0), runs: +(d.runs || 0), paceSec: +(d.paceSec || 0), timeSec: +(d.timeSec || 0) };
       }
     }
     
-    // (Animation logic same as before...)
-    // [중요 수정] Result 너비 동기화 (프리뷰 기준)
+    // Result 너비 동기화 (프리뷰 기준)
     function lockFitResultTransforms(target, state) {
       const rvDistance = $('#rvDistance');
       const rvPace = $('#rvPace');
       const rvTime = $('#rvTime');
       const rvRuns = $('#rvRuns');
 
-      // Helper to copy width
       const syncWidth = (rvEl, pvId) => {
           if (!rvEl) return;
           const pvEl = document.getElementById(pvId);
@@ -948,7 +1143,6 @@
               rvEl.style.display = 'inline-block';
               rvEl.style.whiteSpace = 'nowrap';
               
-              // [NEW] Align sync for Result
               if(state.align === 'center' && state.recordType === 'daily') {
                   rvEl.style.textAlign = 'center';
               } else {
@@ -957,7 +1151,6 @@
           }
       };
       
-      // ... same mapping ...
       if (state.recordType === 'daily') {
           syncWidth(rvDistance, 'pvDistanceDaily');
           syncWidth(rvPace, 'pvPaceDaily');
@@ -980,7 +1173,6 @@
     }
     
     function animateAll(target) {
-        // ... same logic ...
       const locker = lockFitResultTransforms(target, state);
       locker.resetToStart();
       const hold = 500; const dur = 2000; const t0 = performance.now();
@@ -1028,7 +1220,6 @@
        applyLayout(); 
        applyBG(); 
        applyDataType();
-       // [NEW]
        applyAlign();
        applyFontColor();
        updatePreview();
