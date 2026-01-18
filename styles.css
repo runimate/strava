@@ -32,7 +32,24 @@
   --ui-m-label-size: 10px;
   --ui-m-value-size: 24px;
 }
-
+/* [패치 1] 모든 닫기 버튼: 우측 상단 고정 & 검정색 강제 적용 */
+.close-big,
+.result-screen .screen-close {
+    position: absolute !important;
+    top: 24px !important;
+    right: 24px !important;
+    color: #000 !important; /* 무조건 검정색 */
+    z-index: 99999 !important; /* 최상위 노출 */
+    background: transparent !important;
+    border: none !important;
+    font-size: 40px !important;
+    width: auto !important;
+    height: auto !important;
+    opacity: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
 body{
   background:#fff;
   font-family: 'Inter', sans-serif;
