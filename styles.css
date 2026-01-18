@@ -135,15 +135,16 @@ body.no-scroll{ overflow: hidden; }
 .ocr-status{ margin-top: 8px; font-size: 11px; color:#333; display:none; }
 .ocr-status.show{ display:block; }
 
-/* LOGIN BUTTON WRAPS (FIXED) */
+/* [FIXED] LOGIN BUTTON WRAPS */
+/* !important 제거하여 JS로 display:none 제어 가능하도록 수정 */
 #garminConnectBtnWrap, #stravaConnectBtnWrap {
     width: 100%;
-    padding: 20px 0 !important; /* 상하 패딩 축소 */
-    display: flex !important;
+    padding: 20px 0 !important;
+    display: flex; /* !important 제거 */
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 12px !important; /* 상하 간격 통일 */
+    gap: 12px !important;
     text-align: center !important;
 }
 #garminConnectBtnWrap > *, #stravaConnectBtnWrap > * { margin: 0 !important; }
@@ -157,107 +158,39 @@ body.no-scroll{ overflow: hidden; }
 .preview{ border: 2px solid #000; border-radius: 18px; padding: 18px 18px 16px 18px; width: min(240px, 100%); background:#fff; overflow: hidden; transition: color 0.1s; }
 .preview.bg-white{ background:#fff; color:#000; }
 .preview.bg-black{ background:#000; color:#fff; }
-
-/* [FIX] Type 2 (가로)일 때 너비 100% 강제 */
 .preview.type2 { width: 100% !important; max-width: 100% !important; }
 
 .result-label, .data-label{ font-family: inherit; font-size: var(--ui-label-size); line-height: 1; opacity: 0.8; margin-bottom: var(--ui-label-to-value-gap); display:block; }
 .result-value, .data-value{ font-family: inherit; font-size: var(--ui-value-size); line-height: 1; font-weight: 900; display:flex; align-items:flex-end; }
 .result-value > span, .data-value > span { display:inline-block; transform-origin: left bottom; }
 
-/* =================================================================
-   PREVIEW ALIGNMENT & LAYOUT LOGIC
-   ================================================================= */
+/* PREVIEW ALIGNMENT */
+.preview.type1 .preview-content, .result-wrap.type1 .result-block { display: flex; flex-direction: column; gap: var(--ui-stack-gap); }
+.preview.align-left.type1 .result-item, .result-wrap.align-left.type1 .result-item { align-items: flex-start; text-align: left; }
+.preview.align-left.type1 .result-value, .result-wrap.align-left.type1 .result-value { justify-content: flex-start; }
+.preview.align-center.type1 .result-item, .result-wrap.align-center.type1 .result-item { align-items: center; text-align: center; }
+.preview.align-center.type1 .result-value, .result-wrap.align-center.type1 .result-value { justify-content: center; }
+.preview.align-center.type1 .result-value > span, .result-wrap.align-center.type1 .result-value > span { transform-origin: center bottom !important; }
 
-/* --- Type 1 (Stack) --- */
-.preview.type1 .preview-content, 
-.result-wrap.type1 .result-block { 
-    display: flex; flex-direction: column; gap: var(--ui-stack-gap); 
-}
+.preview.type2 .preview-content, .result-wrap.type2 .result-block { display: flex; flex-direction: row; gap: var(--ui-col-gap); }
+.preview.type2 .result-item, .result-wrap.type2 .result-item { display: flex; flex-direction: column; gap: 0; flex: 0 0 auto; }
+.preview.align-left.type2 .preview-content, .result-wrap.align-left.type2 .result-block { justify-content: flex-start; }
+.preview.align-left.type2 .result-item, .result-wrap.align-left.type2 .result-item { align-items: flex-start; text-align: left; }
+.preview.align-center.type2 .preview-content, .result-wrap.align-center.type2 .result-block { justify-content: center; }
+.preview.align-center.type2 .result-item, .result-wrap.align-center.type2 .result-item { align-items: center; text-align: center; }
+.preview.align-center.type2 .result-value > span, .result-wrap.align-center.type2 .result-value > span { transform-origin: center bottom !important; }
 
-/* T1 Left Align */
-.preview.align-left.type1 .result-item, 
-.result-wrap.align-left.type1 .result-item { 
-    align-items: flex-start; text-align: left; 
-}
-.preview.align-left.type1 .result-value, 
-.result-wrap.align-left.type1 .result-value {
-    justify-content: flex-start; 
-}
-
-/* T1 Center Align */
-.preview.align-center.type1 .result-item, 
-.result-wrap.align-center.type1 .result-item { 
-    align-items: center; text-align: center; 
-}
-.preview.align-center.type1 .result-value, 
-.result-wrap.align-center.type1 .result-value {
-    justify-content: center; 
-}
-.preview.align-center.type1 .result-value > span, 
-.result-wrap.align-center.type1 .result-value > span {
-    transform-origin: center bottom !important; 
-}
-
-/* --- Type 2 (Row) --- */
-.preview.type2 .preview-content, 
-.result-wrap.type2 .result-block { 
-    display: flex; flex-direction: row; gap: var(--ui-col-gap); 
-}
-.preview.type2 .result-item, 
-.result-wrap.type2 .result-item { 
-    display: flex; flex-direction: column; gap: 0; flex: 0 0 auto; 
-}
-
-/* T2 Left Align */
-.preview.align-left.type2 .preview-content, 
-.result-wrap.align-left.type2 .result-block { 
-    justify-content: flex-start; 
-}
-.preview.align-left.type2 .result-item,
-.result-wrap.align-left.type2 .result-item { 
-    align-items: flex-start; text-align: left; 
-}
-
-/* T2 Center Align */
-.preview.align-center.type2 .preview-content,
-.result-wrap.align-center.type2 .result-block { 
-    justify-content: center; 
-}
-.preview.align-center.type2 .result-item,
-.result-wrap.align-center.type2 .result-item { 
-    align-items: center; text-align: center; 
-}
-.preview.align-center.type2 .result-value > span,
-.result-wrap.align-center.type2 .result-value > span {
-    transform-origin: center bottom !important; 
-}
-
-
-/* --- Monthly Layouts (Always Left Aligned for now) --- */
+/* Monthly Layouts */
 .monthly-type1, .monthly-type2 { display: flex; flex-direction: column; width: 100%; align-items: flex-start; }
 .m1-month, .m2-month-line { font-size: var(--ui-month-size); margin-bottom: var(--ui-month-to-dist-gap); font-weight: 700; }
 .m1-distance .m1-distance-value, .m2-distance .m2-distance-value { font-size: var(--ui-distance-size); font-weight: 900; line-height: 0.9; }
 
-/* M1 Stack */
 .m1-stack { display: flex; flex-direction: column; gap: var(--ui-stack-gap); width: 100%; align-items: flex-start; }
+.monthly-type1 .m1-item .m-label, .result-wrap.type1 .m1-item .result-label { width: 60px !important; min-width: 60px !important; margin-right: 12px !important; text-align: left !important; display: block !important; padding-top: 6px !important; line-height: 1 !important; }
+.monthly-type1 .m1-item, .result-wrap.type1 .m1-item { display: flex !important; align-items: flex-start !important; justify-content: flex-start !important; gap: 0 !important; }
+.monthly-type1 .m1-item .m-value, .result-wrap.type1 .m1-item .result-value { line-height: 0.9 !important; align-items: flex-start !important; }
 
-/* M1 Item Detail (긴급 패치 통합) */
-.monthly-type1 .m1-item .m-label, 
-.result-wrap.type1 .m1-item .result-label {
-    width: 60px !important; min-width: 60px !important; margin-right: 12px !important; text-align: left !important; display: block !important; padding-top: 6px !important; line-height: 1 !important;
-}
-.monthly-type1 .m1-item, .result-wrap.type1 .m1-item {
-    display: flex !important; align-items: flex-start !important; justify-content: flex-start !important; gap: 0 !important;
-}
-.monthly-type1 .m1-item .m-value, .result-wrap.type1 .m1-item .result-value {
-    line-height: 0.9 !important; align-items: flex-start !important;
-}
-
-/* M2 Row */
 .m2-row { display: flex; flex-direction: row; gap: var(--ui-col-gap); width: 100%; justify-content: flex-start; }
-
-/* M2 Result Vertical Stack Fix (긴급 패치 통합) */
 .result-wrap.type2.monthly .result-block { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 0 !important; }
 .result-wrap.type2.monthly .m2-row { display: flex !important; flex-direction: row !important; width: 100% !important; margin-top: 14px !important; gap: 24px !important; }
 
@@ -276,7 +209,7 @@ body.no-scroll{ overflow: hidden; }
 .modal-close, .screen-close { border:none; background:transparent; font-size:24px; cursor:pointer; }
 .modal-body { padding: 14px; }
 
-/* Color Modal Specific */
+/* Color Modal */
 .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
 .color-chip { width: 100%; aspect-ratio: 1; border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.1s; }
 .color-chip:active { transform: scale(0.9); }
