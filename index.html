@@ -57,14 +57,13 @@
 
         <div class="data-content" id="contentGarmin" style="display:none;">
           <div id="garminConnectBtnWrap">
-             <div style="font-size: 14px; margin-bottom: 15px; color: #666; font-weight: 500;">
+             <div style="font-size: 14px; color: #666; font-weight: 500;">
                Connect to load your activities
              </div>
              <button id="btnOpenGarminLogin" style="background: #000; color: #75b7ff; border: none; padding: 14px 28px; border-radius: 30px; font-weight: bold; font-size: 14px; cursor: pointer; transition: opacity 0.2s;">
                Login to Garmin
              </button>
           </div>
-
           <div class="garmin-card" id="garminCard" style="display:none; margin-top:20px;">
             <div class="garmin-card-left">
               <div class="garmin-date" id="garminDateText">0000.00.00</div>
@@ -80,19 +79,16 @@
           </div>
         </div>
 
-       <div class="data-content" id="contentStrava" style="display:none;">
-          
-          <div id="stravaConnectBtnWrap" style="width: 100%; padding: 60px 0; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-             <div style="font-size: 14px; margin-bottom: 15px; color: #777; font-weight: 700;">
+        <div class="data-content" id="contentStrava" style="display:none;">
+          <div id="stravaConnectBtnWrap">
+             <div style="font-size: 14px; color: #777; font-weight: 700;">
                Strava is on the way.
              </div>
-             
              <button id="btnStravaLogin" style="background: #B5B5B5; color: #fff; border: none; padding: 14px 28px; border-radius: 30px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: none; transition: opacity 0.2s;">
                <span>Connect with</span>
                <img src="./img/strava_wht.png" alt="Strava" style="height: 14px; width: auto; margin-top: -1px; display: block;">
              </button>
           </div>
-
           <div id="stravaCardWrap" style="display: none; flex-direction: column; width: 100%;">
               <div class="garmin-card" id="stravaCard">
                 <div class="garmin-card-left">
@@ -107,7 +103,6 @@
                    <div class="hamburger"><span></span><span></span><span></span></div>
                 </button>
               </div>
-              
               <div style="margin-top: 12px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">
                   <span style="font-size: 11px; font-weight: 700; color: #999;">Powered by</span>
                   <img src="./img/strava_org.png" alt="Strava" style="height: 12px; width: auto; display: block;">
@@ -447,8 +442,8 @@
       font: 'anton',       
       layout: 'type1',     
       bg: 'white',         
-      align: 'left',       // [NEW] left or center
-      fontColor: 'auto',   // [NEW] auto or hex code
+      align: 'left',       
+      fontColor: 'auto',   
       daily: { km: 0, paceSec: 0, timeSec: 0 },
       monthly: { km: 0, runs: 0, paceSec: 0, timeSec: 0, month: today.getMonth() + 1, year: today.getFullYear() },
       garmin: { date: '-', km: 0, paceSec: 0, timeSec: 0 },
@@ -493,7 +488,6 @@
       btnType1: $('#btnType1'), btnType2: $('#btnType2'),
       btnBgWhite: $('#btnBgWhite'), btnBgBlack: $('#btnBgBlack'),
       
-      // [NEW ELEMENTS]
       alignControlPanel: $('#alignControlPanel'),
       btnAlignLeft: $('#btnAlignLeft'), btnAlignCenter: $('#btnAlignCenter'),
       btnFontColorAuto: $('#btnFontColorAuto'), btnFontColorPicker: $('#btnFontColorPicker'),
@@ -593,7 +587,6 @@
       if(el.pvPaceMonthlyT2) el.pvPaceMonthlyT2.textContent = fmtPacePreview(m.paceSec);
       if(el.pvTimeMonthlyT2) el.pvTimeMonthlyT2.textContent = fmtTimePreview(m.timeSec);
       
-      // Update Card texts if needed...
       if(state.dataType === 'garmin' || state.dataType === 'strava') {
          const cardSrc = (state.dataType === 'garmin') ? state.garmin : state.strava;
          if(cardSrc && cardSrc.date !== '-') {
@@ -611,29 +604,23 @@
          }
       }
 
-      // Apply Styles (Align & Color)
       applyPreviewStyles();
-      
       requestAnimationFrame(applyFitPreview);
     }
     
-    // Helper to apply Align and Color
     function applyPreviewStyles() {
         const pvs = [el.previewDaily, el.previewMonthly];
         pvs.forEach(pv => {
             if(!pv) return;
-            // 1. Align
             pv.classList.remove('align-left', 'align-center');
-            // Force left align if monthly
             if(state.recordType === 'monthly') {
                 pv.classList.add('align-left'); 
             } else {
                 pv.classList.add(`align-${state.align}`);
             }
 
-            // 2. Color
             if(state.fontColor === 'auto') {
-                pv.style.color = ''; // inherit from bg class
+                pv.style.color = ''; 
             } else {
                 pv.style.color = state.fontColor;
             }
@@ -656,7 +643,6 @@
     }
 
     function applyFitPreview() {
-      // Logic same as before...
       if (state.recordType === 'daily') {
         if (state.layout === 'type2') {
           const scale = computeScaleForGroup([el.pvDistanceDaily, el.pvPaceDaily, el.pvTimeDaily], 0.30);
@@ -842,10 +828,8 @@
       if (state.layout === 'type1') { if (m1) m1.style.display = 'flex'; if (m2) m2.style.display = 'none'; } 
       else { if (m1) m1.style.display = 'none'; if (m2) m2.style.display = 'flex'; }
 
-      // Disable Align control if Monthly
       if (!isDaily) {
          el.alignControlPanel.classList.add('disabled');
-         // Monthly is always left aligned visually in preview content logic
       } else {
          el.alignControlPanel.classList.remove('disabled');
       }
@@ -911,7 +895,6 @@
     function applyAlign() {
         el.btnAlignLeft.classList.toggle('active', state.align === 'left');
         el.btnAlignCenter.classList.toggle('active', state.align === 'center');
-        // Re-apply config to pick up _l vs _c values
         applyUIConfigToRoot(state);
         updatePreview();
     }
@@ -919,6 +902,14 @@
     function applyFontColor() {
         el.btnFontColorAuto.classList.toggle('active', state.fontColor === 'auto');
         el.btnFontColorPicker.classList.toggle('active', state.fontColor !== 'auto');
+        
+        // [수정된 부분] 컬러 버튼 배경색 피드백
+        if (state.fontColor !== 'auto') {
+            el.btnFontColorPicker.style.background = state.fontColor;
+        } else {
+            el.btnFontColorPicker.style.background = ''; // CSS class style 복귀
+        }
+
         updatePreview();
     }
 
@@ -929,7 +920,6 @@
     el.btnType1.addEventListener('click', () => { state.layout = 'type1'; applyLayout(); });
     el.btnType2.addEventListener('click', () => { state.layout = 'type2'; applyLayout(); });
     
-    // Align Events
     el.btnAlignLeft.addEventListener('click', () => { 
         if(state.recordType === 'monthly') return;
         state.align = 'left'; applyAlign(); 
@@ -942,7 +932,6 @@
     el.btnBgWhite.addEventListener('click', () => { state.bg = 'white'; applyBG(); });
     el.btnBgBlack.addEventListener('click', () => { state.bg = 'black'; applyBG(); });
     
-    // Font Color Events
     el.btnFontColorAuto.addEventListener('click', () => {
         state.fontColor = 'auto';
         applyFontColor();
@@ -961,7 +950,7 @@
     });
     el.nativeColorInput.addEventListener('input', (e) => {
         state.fontColor = e.target.value;
-        applyFontColor(); // Live preview
+        applyFontColor(); 
     });
     el.nativeColorInput.addEventListener('change', (e) => {
         closeScreen('colorPickerOverlay');
