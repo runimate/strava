@@ -33,14 +33,14 @@
   --ui-m-value-size: 24px;
 }
 
-/* 닫기 버튼: 우측 상단 고정 & 검정색 강제 적용 */
+/* [수정] 닫기 버튼 기본 스타일 (검정) */
 .close-big,
 .result-screen .screen-close,
 .month-picker .screen-close {
     position: absolute !important;
     top: 24px !important;
     right: 24px !important;
-    color: #000 !important;
+    color: #000 !important; /* 기본은 검정 */
     z-index: 99999 !important;
     background: transparent !important;
     border: none !important;
@@ -51,6 +51,11 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+}
+
+/* [추가] 결과 화면이 Black 배경일 때 닫기 버튼 White로 반전 */
+.result-screen.bg-black .screen-close {
+    color: #fff !important;
 }
 
 body{
@@ -180,7 +185,7 @@ body.no-scroll{ overflow: hidden; }
 /* PREVIEW CONTAINER */
 .preview{ border: 2px solid #000; border-radius: 18px; padding: 18px 18px 16px 18px; width: min(240px, 100%); background:#fff; overflow: hidden; transition: color 0.1s; }
 
-/* [수정] 결과 화면(.result-screen)에도 배경색이 적용되도록 선택자 추가 */
+/* 결과 화면(.result-screen)에도 배경색이 적용되도록 선택자 추가 */
 .preview.bg-white, .result-screen.bg-white { background:#fff !important; color:#000 !important; }
 .preview.bg-black, .result-screen.bg-black { background:#000 !important; color:#fff !important; }
 
