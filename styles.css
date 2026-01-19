@@ -294,7 +294,7 @@ body.no-scroll{ overflow: hidden; }
     margin-right: 12px !important; 
     text-align: left !important; 
     display: block !important; 
-    padding-top: 10px !important; 
+    padding-top: 1px !important; 
     line-height: 1 !important;
     margin-bottom: 0 !important;
 }
