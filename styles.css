@@ -379,3 +379,63 @@ body.no-scroll{ overflow: hidden; }
 @font-face{ font-family:'DS-Digital'; src:url('./fonts/LCD.woff2') format('woff2'); font-weight:400 900; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Special Gothic Expanded One'; src:url('./fonts/Gothic.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Quantico'; src:url('./fonts/Speed.woff2') format('woff2'); font-weight:400 900; font-style:normal; font-display:swap; }
+
+/* =========================================================
+   [추가 긴급 패치] M1 상단 정렬 & D1 중앙 정렬 수정
+   ========================================================= */
+
+/* 1. M1 (Monthly Type 1) 텍스트 상단(Top) 정렬 디테일 수정 */
+.monthly-type1 .m1-item,
+.result-wrap.type1 .m1-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important; /* 상단 정렬 핵심 */
+    justify-content: flex-start !important;
+    gap: 0 !important;
+}
+
+.monthly-type1 .m1-item .m-label,
+.result-wrap.type1 .m1-item .result-label {
+    /* 라벨이 숫자보다 작으므로 시각적 상단 정렬을 위해 상단 패딩 부여 */
+    padding-top: 6px !important; 
+    line-height: 1 !important;
+    margin-top: 0 !important;
+    
+    /* 너비 고정 */
+    width: 60px !important;
+    min-width: 60px !important;
+    text-align: left !important;
+    display: block !important;
+}
+
+.monthly-type1 .m1-item .m-value,
+.result-wrap.type1 .m1-item .result-value {
+    /* 큰 숫자가 가진 자체 상단 여백(leading)을 없애 라벨과 높이를 맞춤 */
+    line-height: 0.8 !important; 
+    display: flex !important;
+    align-items: flex-start !important;
+}
+
+
+/* 2. D1 (Daily Type 1) 중앙 정렬(Align Center) 시 프레임 가운데로 오게 수정 */
+/* 프리뷰 컨텐츠 전체를 가운데 정렬 */
+.preview.align-center.type1 .preview-content, 
+.result-wrap.align-center.type1 .result-block { 
+    align-items: center !important; /* Flex Column 아이템 가운데 정렬 */
+    text-align: center !important;
+}
+
+/* 개별 아이템(라벨+값)도 가운데 정렬 */
+.preview.align-center.type1 .result-item, 
+.result-wrap.align-center.type1 .result-item { 
+    align-items: center !important; 
+    text-align: center !important;
+    width: 100% !important; /* 너비를 꽉 채워서 중앙 정렬 효과 극대화 */
+}
+
+/* 값(숫자) 영역 가운데 정렬 */
+.preview.align-center.type1 .result-value, 
+.result-wrap.align-center.type1 .result-value {
+    justify-content: center !important;
+    width: 100% !important;
+}
