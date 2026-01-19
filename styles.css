@@ -296,7 +296,7 @@ body.no-scroll{ overflow: hidden; }
     text-align: left !important; 
     display: block !important; 
     /* 상단 정렬 시각 보정 */
-    padding-top: 10px !important; 
+    padding-top: 1px !important; 
     line-height: 1 !important;
     margin-bottom: 0 !important;
 }
