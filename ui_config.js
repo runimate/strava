@@ -18,7 +18,7 @@ export const UI_CONFIG = {
       // [Monthly Type 1 - 상단 강조 + 하단 스택] (Monthly는 좌측 정렬 고정)
       m1: {
         monthSize: 16, distanceSize: 44, monthToDistGap: 8, distToStatsGap: 20,
-        statsLabelSize: 12, statsValueSize: 26, statsLvGap: 5, statsStackGap: 14
+        statsLabelSize: 12, statsValueSize: 26, statsLvGap: -5, statsStackGap: 14
       },
 
       // [Monthly Type 2 - 상단 강조 + 하단 가로]
@@ -52,7 +52,7 @@ export const UI_CONFIG = {
       d2_l: { labelSize: 12, valueSize: 32, labelToValueGap: 4, colGap: 28 },
       d2_c: { labelSize: 12, valueSize: 32, labelToValueGap: 4, colGap: 32 },
 
-      m1: { monthSize: 14, distanceSize: 46, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 14, statsValueSize: 24, statsLvGap: 5, statsStackGap: 14 },
+      m1: { monthSize: 18, distanceSize: 46, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 14, statsValueSize: 24, statsLvGap: 5, statsStackGap: 14 },
       m2: { monthSize: 18, distanceSize: 52, monthToDistGap: 6, distToStatsGap: 16, statsLabelSize: 16, statsValueSize: 30, statsLvGap: 2, statsColGap: 34 }
     },
 
