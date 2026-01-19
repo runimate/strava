@@ -32,9 +32,11 @@
   --ui-m-label-size: 10px;
   --ui-m-value-size: 24px;
 }
-/* [패치 1] 모든 닫기 버튼: 우측 상단 고정 & 검정색 강제 적용 */
+
+/* [패치 1] 모든 닫기 버튼 (Monthly 포함): 우측 상단 고정 & 검정색 강제 적용 */
 .close-big,
-.result-screen .screen-close {
+.result-screen .screen-close,
+.month-picker .screen-close { /* Monthly 닫기 버튼 추가 */
     position: absolute !important;
     top: 24px !important;
     right: 24px !important;
@@ -50,6 +52,7 @@
     align-items: center !important;
     justify-content: center !important;
 }
+
 body{
   background:#fff;
   font-family: 'Inter', sans-serif;
@@ -153,18 +156,24 @@ body.no-scroll{ overflow: hidden; }
 .ocr-status.show{ display:block; }
 
 /* [FIXED] LOGIN BUTTON WRAPS */
-/* !important 제거하여 JS로 display:none 제어 가능하도록 수정 */
+/* [패치 2] 간격 24px로 조정, 중앙 정렬 강화 */
 #garminConnectBtnWrap, #stravaConnectBtnWrap {
     width: 100%;
     padding: 20px 0 !important;
-    display: flex; /* !important 제거 */
+    display: flex; /* !important 제거하여 JS 토글 가능하게 */
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 12px !important;
+    gap: 24px !important; /* [수정] 간격 넓힘 */
     text-align: center !important;
 }
-#garminConnectBtnWrap > *, #stravaConnectBtnWrap > * { margin: 0 !important; }
+#garminConnectBtnWrap > *, #stravaConnectBtnWrap > * { margin: 0 auto !important; } /* 버튼 중앙 정렬 강제 */
+
+/* JS에서 숨김 처리 시 CSS 우선순위 때문에 안 사라지는 현상 방지 */
+#garminConnectBtnWrap[style*="none"],
+#stravaConnectBtnWrap[style*="none"] {
+    display: none !important;
+}
 
 /* MONTH PICKER */
 .month-block{ margin-top: 12px; display:flex; flex-direction:column; align-items: center; justify-content: center; margin-bottom: 24px; }
@@ -181,33 +190,110 @@ body.no-scroll{ overflow: hidden; }
 .result-value, .data-value{ font-family: inherit; font-size: var(--ui-value-size); line-height: 1; font-weight: 900; display:flex; align-items:flex-end; }
 .result-value > span, .data-value > span { display:inline-block; transform-origin: left bottom; }
 
-/* PREVIEW ALIGNMENT */
-.preview.type1 .preview-content, .result-wrap.type1 .result-block { display: flex; flex-direction: column; gap: var(--ui-stack-gap); }
-.preview.align-left.type1 .result-item, .result-wrap.align-left.type1 .result-item { align-items: flex-start; text-align: left; }
-.preview.align-left.type1 .result-value, .result-wrap.align-left.type1 .result-value { justify-content: flex-start; }
-.preview.align-center.type1 .result-item, .result-wrap.align-center.type1 .result-item { align-items: center; text-align: center; }
-.preview.align-center.type1 .result-value, .result-wrap.align-center.type1 .result-value { justify-content: center; }
-.preview.align-center.type1 .result-value > span, .result-wrap.align-center.type1 .result-value > span { transform-origin: center bottom !important; }
+/* =========================================================
+   [패치 4] PREVIEW ALIGNMENT (Center Fix)
+   ========================================================= */
 
-.preview.type2 .preview-content, .result-wrap.type2 .result-block { display: flex; flex-direction: row; gap: var(--ui-col-gap); }
-.preview.type2 .result-item, .result-wrap.type2 .result-item { display: flex; flex-direction: column; gap: 0; flex: 0 0 auto; }
-.preview.align-left.type2 .preview-content, .result-wrap.align-left.type2 .result-block { justify-content: flex-start; }
-.preview.align-left.type2 .result-item, .result-wrap.align-left.type2 .result-item { align-items: flex-start; text-align: left; }
-.preview.align-center.type2 .preview-content, .result-wrap.align-center.type2 .result-block { justify-content: center; }
-.preview.align-center.type2 .result-item, .result-wrap.align-center.type2 .result-item { align-items: center; text-align: center; }
-.preview.align-center.type2 .result-value > span, .result-wrap.align-center.type2 .result-value > span { transform-origin: center bottom !important; }
+/* --- Type 1 (Stack) --- */
+.preview.type1 .preview-content, 
+.result-wrap.type1 .result-block { 
+    display: flex; flex-direction: column; gap: var(--ui-stack-gap); 
+}
 
-/* Monthly Layouts */
+/* T1 Left Align */
+.preview.align-left.type1 .result-item, 
+.result-wrap.align-left.type1 .result-item { 
+    align-items: flex-start; text-align: left; 
+}
+.preview.align-left.type1 .result-value, 
+.result-wrap.align-left.type1 .result-value {
+    justify-content: flex-start; 
+}
+
+/* T1 Center Align - [수정] 중앙 정렬 완벽 지원 */
+.preview.align-center.type1 .result-item, 
+.result-wrap.align-center.type1 .result-item { 
+    align-items: center; text-align: center; width: 100%;
+}
+.preview.align-center.type1 .result-value, 
+.result-wrap.align-center.type1 .result-value {
+    justify-content: center; width: 100%;
+}
+.preview.align-center.type1 .result-value > span, 
+.result-wrap.align-center.type1 .result-value > span {
+    transform-origin: center bottom !important; 
+}
+
+/* --- Type 2 (Row) --- */
+.preview.type2 .preview-content, 
+.result-wrap.type2 .result-block { 
+    display: flex; flex-direction: row; gap: var(--ui-col-gap); 
+}
+.preview.type2 .result-item, 
+.result-wrap.type2 .result-item { 
+    display: flex; flex-direction: column; gap: 0; flex: 0 0 auto; 
+}
+
+/* T2 Left Align */
+.preview.align-left.type2 .preview-content, 
+.result-wrap.align-left.type2 .result-block { 
+    justify-content: flex-start; 
+}
+.preview.align-left.type2 .result-item,
+.result-wrap.align-left.type2 .result-item { 
+    align-items: flex-start; text-align: left; 
+}
+
+/* T2 Center Align */
+.preview.align-center.type2 .preview-content,
+.result-wrap.align-center.type2 .result-block { 
+    justify-content: center; 
+}
+.preview.align-center.type2 .result-item,
+.result-wrap.align-center.type2 .result-item { 
+    align-items: center; text-align: center; 
+}
+.preview.align-center.type2 .result-value > span,
+.result-wrap.align-center.type2 .result-value > span {
+    transform-origin: center bottom !important; 
+}
+
+
+/* --- Monthly Layouts --- */
 .monthly-type1, .monthly-type2 { display: flex; flex-direction: column; width: 100%; align-items: flex-start; }
 .m1-month, .m2-month-line { font-size: var(--ui-month-size); margin-bottom: var(--ui-month-to-dist-gap); font-weight: 700; }
 .m1-distance .m1-distance-value, .m2-distance .m2-distance-value { font-size: var(--ui-distance-size); font-weight: 900; line-height: 0.9; }
 
 .m1-stack { display: flex; flex-direction: column; gap: var(--ui-stack-gap); width: 100%; align-items: flex-start; }
-.monthly-type1 .m1-item .m-label, .result-wrap.type1 .m1-item .result-label { width: 60px !important; min-width: 60px !important; margin-right: 12px !important; text-align: left !important; display: block !important; padding-top: 6px !important; line-height: 1 !important; }
-.monthly-type1 .m1-item, .result-wrap.type1 .m1-item { display: flex !important; align-items: flex-start !important; justify-content: flex-start !important; gap: 0 !important; }
-.monthly-type1 .m1-item .m-value, .result-wrap.type1 .m1-item .result-value { line-height: 0.9 !important; align-items: flex-start !important; }
 
+/* [패치 5] Monthly M1 레이아웃 복구 (이전 세팅값 적용) */
+.monthly-type1 .m1-item .m-label, 
+.result-wrap.type1 .m1-item .result-label {
+    width: 60px !important; 
+    min-width: 60px !important; 
+    margin-right: 12px !important; 
+    text-align: left !important; 
+    display: block !important; 
+    padding-top: 6px !important; 
+    line-height: 1 !important;
+}
+.monthly-type1 .m1-item, 
+.result-wrap.type1 .m1-item {
+    display: flex !important; 
+    align-items: flex-start !important; 
+    justify-content: flex-start !important; 
+    gap: 0 !important;
+}
+.monthly-type1 .m1-item .m-value, 
+.result-wrap.type1 .m1-item .result-value {
+    line-height: 0.9 !important; 
+    align-items: flex-start !important;
+}
+
+/* M2 Row */
 .m2-row { display: flex; flex-direction: row; gap: var(--ui-col-gap); width: 100%; justify-content: flex-start; }
+
+/* M2 Result Vertical Stack Fix */
 .result-wrap.type2.monthly .result-block { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 0 !important; }
 .result-wrap.type2.monthly .m2-row { display: flex !important; flex-direction: row !important; width: 100% !important; margin-top: 14px !important; gap: 24px !important; }
 
@@ -243,7 +329,6 @@ body.no-scroll{ overflow: hidden; }
 .colon{ font-weight:900; font-size:16px; text-align:center; }
 
 /* Login Screens */
-.close-big { top: 16px; right: 16px; width: 56px; height: 56px; font-size: 36px; font-weight: 300; z-index: 5; position: absolute; }
 .garmin-login{ background: var(--garmin); color:#000; }
 #stravaLoginScreen.garmin-login{ background: var(--strava); color:#000; }
 .garmin-login-wrap{ width:100%; height:100%; position:relative; padding: 42px 24px 24px 24px; }
