@@ -185,9 +185,10 @@ body.no-scroll{ overflow: hidden; }
 /* PREVIEW CONTAINER */
 .preview{ border: 2px solid #000; border-radius: 18px; padding: 18px 18px 16px 18px; width: min(240px, 100%); background:#fff; overflow: hidden; transition: color 0.1s; }
 
-/* 배경색 공통 적용 (프리뷰 & 결과화면) */
-.preview.bg-white, .result-screen.bg-white { background:#fff !important; color:#000 !important; }
-.preview.bg-black, .result-screen.bg-black { background:#000 !important; color:#fff !important; }
+/* [수정] 컬러피커 적용을 위해 color 속성의 !important 제거 */
+/* 배경색은 강제하되, 글자색은 인라인 스타일(컬러피커)이 우선되도록 !important 제거 */
+.preview.bg-white, .result-screen.bg-white { background:#fff !important; color:#000; }
+.preview.bg-black, .result-screen.bg-black { background:#000 !important; color:#fff; }
 
 .preview.type2 { width: 100% !important; max-width: 100% !important; }
 
@@ -215,7 +216,7 @@ body.no-scroll{ overflow: hidden; }
     justify-content: flex-start; 
 }
 
-/* T1 Center Align (D1 중앙 정렬 Fix) */
+/* T1 Center Align */
 .preview.align-center.type1 .preview-content, 
 .result-wrap.align-center.type1 .result-block { 
     align-items: center !important; 
@@ -225,7 +226,7 @@ body.no-scroll{ overflow: hidden; }
 .result-wrap.align-center.type1 .result-item { 
     align-items: center !important; 
     text-align: center !important; 
-    width: 100% !important; /* [중요] 너비 꽉 채워서 중앙 정렬 */
+    width: 100% !important;
 }
 .preview.align-center.type1 .result-value, 
 .result-wrap.align-center.type1 .result-value {
@@ -279,7 +280,7 @@ body.no-scroll{ overflow: hidden; }
 
 .m1-stack { display: flex; flex-direction: column; gap: var(--ui-stack-gap); width: 100%; align-items: flex-start; }
 
-/* [M1] Monthly M1: 시각적 상단 정렬 (프리뷰/결과 동일 적용) */
+/* [M1 중요] Monthly M1: 시각적 상단 정렬 (프리뷰/결과 동일 적용) */
 .monthly-type1 .m1-item, 
 .result-wrap.type1 .m1-item {
     display: flex !important; 
@@ -291,12 +292,10 @@ body.no-scroll{ overflow: hidden; }
 .result-wrap.type1 .m1-item .result-label {
     width: 60px !important; 
     min-width: 60px !important; 
-    /* 간격 변수 적용 */
     margin-right: var(--ui-label-to-value-gap) !important; 
     text-align: left !important; 
     display: block !important; 
-    /* 상단 정렬 시각 보정 */
-    padding-top: 0px !important; 
+    padding-top: 10px !important; 
     line-height: 1 !important;
     margin-bottom: 0 !important;
 }
@@ -325,7 +324,6 @@ body.no-scroll{ overflow: hidden; }
     display: flex !important; 
     flex-direction: row !important; 
     width: 100% !important; 
-    /* 상단 여백 제거 (싱크 맞춤) */
     margin-top: 0 !important; 
     gap: 24px !important; 
 }
@@ -399,11 +397,11 @@ body.no-scroll{ overflow: hidden; }
 .result-block { width: 100%; }
 
 /* =========================================================
-   [수정] 폰트 강제 적용 (프리뷰 & 결과화면 공통)
+   [수정] 폰트 강제 적용 로직
    ========================================================= */
 
-/* 1. ANTON Special Logic */
-/* (1) 값(숫자)은 무조건 Anton */
+/* 1. ANTON Logic */
+/* (1) 숫자(Value)는 무조건 Anton */
 .preview.font-anton .result-value,
 .preview.font-anton .m1-distance-value,
 .preview.font-anton .m2-distance-value,
@@ -419,7 +417,7 @@ body.no-scroll{ overflow: hidden; }
     font-family: 'Inter', sans-serif !important;
 }
 
-/* (3) Monthly 모드 라벨 -> Anton 강제 (요청사항 반영) */
+/* (3) Monthly 모드 라벨 -> Anton 강제 (요청 반영) */
 .preview.monthly.font-anton .result-label,
 .preview.monthly.font-anton .m-label,
 .preview.monthly.font-anton .data-label,
