@@ -33,7 +33,7 @@
   --ui-m-value-size: 24px;
 }
 
-/* 닫기 버튼 기본 (검정) & 우측 상단 고정 */
+/* 닫기 버튼 기본 스타일 (검정) */
 .close-big,
 .result-screen .screen-close,
 .month-picker .screen-close {
@@ -53,7 +53,7 @@
     justify-content: center !important;
 }
 
-/* 결과 화면이 Black일 때 닫기 버튼 White 반전 */
+/* 결과 화면이 Black 배경일 때 닫기 버튼 White로 반전 */
 .result-screen.bg-black .screen-close {
     color: #fff !important;
 }
@@ -185,7 +185,7 @@ body.no-scroll{ overflow: hidden; }
 /* PREVIEW CONTAINER */
 .preview{ border: 2px solid #000; border-radius: 18px; padding: 18px 18px 16px 18px; width: min(240px, 100%); background:#fff; overflow: hidden; transition: color 0.1s; }
 
-/* 결과 화면 BG 적용 */
+/* 배경색 공통 적용 (프리뷰 & 결과화면) */
 .preview.bg-white, .result-screen.bg-white { background:#fff !important; color:#000 !important; }
 .preview.bg-black, .result-screen.bg-black { background:#000 !important; color:#fff !important; }
 
@@ -215,7 +215,7 @@ body.no-scroll{ overflow: hidden; }
     justify-content: flex-start; 
 }
 
-/* T1 Center Align (D1 중앙 정렬) */
+/* T1 Center Align (D1 중앙 정렬 Fix) */
 .preview.align-center.type1 .preview-content, 
 .result-wrap.align-center.type1 .result-block { 
     align-items: center !important; 
@@ -225,7 +225,7 @@ body.no-scroll{ overflow: hidden; }
 .result-wrap.align-center.type1 .result-item { 
     align-items: center !important; 
     text-align: center !important; 
-    width: 100% !important;
+    width: 100% !important; /* [중요] 너비 꽉 채워서 중앙 정렬 */
 }
 .preview.align-center.type1 .result-value, 
 .result-wrap.align-center.type1 .result-value {
@@ -272,14 +272,14 @@ body.no-scroll{ overflow: hidden; }
 }
 
 
-/* --- Monthly Layouts (M1 / M2) --- */
+/* --- Monthly Layouts --- */
 .monthly-type1, .monthly-type2 { display: flex; flex-direction: column; width: 100%; align-items: flex-start; }
 .m1-month, .m2-month-line { font-size: var(--ui-month-size); margin-bottom: var(--ui-month-to-dist-gap); font-weight: 700; }
 .m1-distance .m1-distance-value, .m2-distance .m2-distance-value { font-size: var(--ui-distance-size); font-weight: 900; line-height: 0.9; }
 
 .m1-stack { display: flex; flex-direction: column; gap: var(--ui-stack-gap); width: 100%; align-items: flex-start; }
 
-/* [M1 중요] Monthly M1: 시각적 상단 정렬 (프리뷰/결과 동일 적용) */
+/* [M1] Monthly M1: 시각적 상단 정렬 (프리뷰/결과 동일 적용) */
 .monthly-type1 .m1-item, 
 .result-wrap.type1 .m1-item {
     display: flex !important; 
@@ -296,7 +296,7 @@ body.no-scroll{ overflow: hidden; }
     text-align: left !important; 
     display: block !important; 
     /* 상단 정렬 시각 보정 */
-    padding-top: 1px !important; 
+    padding-top: 0px !important; 
     line-height: 1 !important;
     margin-bottom: 0 !important;
 }
@@ -306,7 +306,7 @@ body.no-scroll{ overflow: hidden; }
     align-items: flex-start !important;
 }
 
-/* [M1 결과화면 싱크] Monthly 결과화면 불필요한 Gap 제거 */
+/* [M1 싱크] Monthly 결과화면 불필요한 Gap 제거 */
 .result-wrap.type1.monthly .result-block {
     gap: 0 !important;
 }
@@ -314,7 +314,7 @@ body.no-scroll{ overflow: hidden; }
 /* [M2] M2 Layout */
 .m2-row { display: flex; flex-direction: row; gap: var(--ui-col-gap); width: 100%; justify-content: flex-start; }
 
-/* [M2 결과화면 싱크] Monthly M2 여백/구조 동기화 */
+/* [M2 싱크] Monthly M2 여백/구조 동기화 */
 .result-wrap.type2.monthly .result-block { 
     display: flex !important; 
     flex-direction: column !important; 
@@ -399,72 +399,56 @@ body.no-scroll{ overflow: hidden; }
 .result-block { width: 100%; }
 
 /* =========================================================
-   [수정] 결과 화면 폰트 강제 적용 
-   (Anton 선택 시: 값=Anton, 라벨=Inter)
-   (그 외 폰트: 값, 라벨 모두 선택한 폰트)
+   [수정] 폰트 강제 적용 (프리뷰 & 결과화면 공통)
    ========================================================= */
 
-/* 1. Anton (라벨은 Inter로 강제) */
-.result-screen.font-anton .result-value, 
-.result-screen.font-anton .m1-distance-value, 
+/* 1. ANTON Special Logic */
+/* (1) 값(숫자)은 무조건 Anton */
+.preview.font-anton .result-value,
+.preview.font-anton .m1-distance-value,
+.preview.font-anton .m2-distance-value,
+.result-screen.font-anton .result-value,
+.result-screen.font-anton .m1-distance-value,
 .result-screen.font-anton .m2-distance-value {
-    font-family: 'Anton', sans-serif !important; 
-}
-.result-screen.font-anton .result-label, 
-.result-screen.font-anton .m-label, 
-.result-screen.font-anton .data-label,
-.result-screen.font-anton .m1-month, 
-.result-screen.font-anton .m2-month-line { 
-    font-family: 'Inter', sans-serif !important; /* Anton일 때 라벨은 Inter */
+    font-family: 'Anton', sans-serif !important;
 }
 
-/* 2. Dots */
-.result-screen.font-dots .result-value, 
-.result-screen.font-dots .m1-distance-value, 
-.result-screen.font-dots .m2-distance-value,
-.result-screen.font-dots .result-label, 
-.result-screen.font-dots .m-label, 
-.result-screen.font-dots .data-label,
-.result-screen.font-dots .m1-month, 
-.result-screen.font-dots .m2-month-line { 
-    font-family: 'Bitcount Grid Single', monospace !important; 
+/* (2) Daily 모드 라벨 -> Inter 강제 */
+.preview:not(.monthly).font-anton .result-label,
+.result-screen.font-anton .result-wrap:not(.monthly) .result-label {
+    font-family: 'Inter', sans-serif !important;
 }
 
-/* 3. LCD */
-.result-screen.font-lcd .result-value, 
-.result-screen.font-lcd .m1-distance-value, 
-.result-screen.font-lcd .m2-distance-value,
-.result-screen.font-lcd .result-label, 
-.result-screen.font-lcd .m-label, 
-.result-screen.font-lcd .data-label,
-.result-screen.font-lcd .m1-month, 
-.result-screen.font-lcd .m2-month-line { 
-    font-family: 'DS-Digital', monospace !important; 
+/* (3) Monthly 모드 라벨 -> Anton 강제 (요청사항 반영) */
+.preview.monthly.font-anton .result-label,
+.preview.monthly.font-anton .m-label,
+.preview.monthly.font-anton .data-label,
+.preview.monthly.font-anton .m1-month,
+.preview.monthly.font-anton .m2-month-line,
+.result-screen.font-anton .result-wrap.monthly .result-label,
+.result-screen.font-anton .result-wrap.monthly .m-label,
+.result-screen.font-anton .result-wrap.monthly .data-label,
+.result-screen.font-anton .result-wrap.monthly .m1-month,
+.result-screen.font-anton .result-wrap.monthly .m2-month-line {
+    font-family: 'Anton', sans-serif !important;
 }
 
-/* 4. Gothic */
-.result-screen.font-gothic .result-value, 
-.result-screen.font-gothic .m1-distance-value, 
-.result-screen.font-gothic .m2-distance-value,
-.result-screen.font-gothic .result-label, 
-.result-screen.font-gothic .m-label, 
-.result-screen.font-gothic .data-label,
-.result-screen.font-gothic .m1-month, 
-.result-screen.font-gothic .m2-month-line { 
-    font-family: 'Special Gothic Expanded One', sans-serif !important; 
-}
+/* 2. Other Fonts (Labels & Values match the font) */
+/* Dots */
+.preview.font-dots .result-value, .preview.font-dots .m1-distance-value, .preview.font-dots .m2-distance-value, .preview.font-dots .result-label, .preview.font-dots .m-label, .preview.font-dots .data-label, .preview.font-dots .m1-month, .preview.font-dots .m2-month-line,
+.result-screen.font-dots .result-value, .result-screen.font-dots .m1-distance-value, .result-screen.font-dots .m2-distance-value, .result-screen.font-dots .result-label, .result-screen.font-dots .m-label, .result-screen.font-dots .data-label, .result-screen.font-dots .m1-month, .result-screen.font-dots .m2-month-line { font-family: 'Bitcount Grid Single', monospace !important; }
 
-/* 5. Speed */
-.result-screen.font-speed .result-value, 
-.result-screen.font-speed .m1-distance-value, 
-.result-screen.font-speed .m2-distance-value,
-.result-screen.font-speed .result-label, 
-.result-screen.font-speed .m-label, 
-.result-screen.font-speed .data-label,
-.result-screen.font-speed .m1-month, 
-.result-screen.font-speed .m2-month-line { 
-    font-family: 'Quantico', sans-serif !important; 
-}
+/* LCD */
+.preview.font-lcd .result-value, .preview.font-lcd .m1-distance-value, .preview.font-lcd .m2-distance-value, .preview.font-lcd .result-label, .preview.font-lcd .m-label, .preview.font-lcd .data-label, .preview.font-lcd .m1-month, .preview.font-lcd .m2-month-line,
+.result-screen.font-lcd .result-value, .result-screen.font-lcd .m1-distance-value, .result-screen.font-lcd .m2-distance-value, .result-screen.font-lcd .result-label, .result-screen.font-lcd .m-label, .result-screen.font-lcd .data-label, .result-screen.font-lcd .m1-month, .result-screen.font-lcd .m2-month-line { font-family: 'DS-Digital', monospace !important; }
+
+/* Gothic */
+.preview.font-gothic .result-value, .preview.font-gothic .m1-distance-value, .preview.font-gothic .m2-distance-value, .preview.font-gothic .result-label, .preview.font-gothic .m-label, .preview.font-gothic .data-label, .preview.font-gothic .m1-month, .preview.font-gothic .m2-month-line,
+.result-screen.font-gothic .result-value, .result-screen.font-gothic .m1-distance-value, .result-screen.font-gothic .m2-distance-value, .result-screen.font-gothic .result-label, .result-screen.font-gothic .m-label, .result-screen.font-gothic .data-label, .result-screen.font-gothic .m1-month, .result-screen.font-gothic .m2-month-line { font-family: 'Special Gothic Expanded One', sans-serif !important; }
+
+/* Speed */
+.preview.font-speed .result-value, .preview.font-speed .m1-distance-value, .preview.font-speed .m2-distance-value, .preview.font-speed .result-label, .preview.font-speed .m-label, .preview.font-speed .data-label, .preview.font-speed .m1-month, .preview.font-speed .m2-month-line,
+.result-screen.font-speed .result-value, .result-screen.font-speed .m1-distance-value, .result-screen.font-speed .m2-distance-value, .result-screen.font-speed .result-label, .result-screen.font-speed .m-label, .result-screen.font-speed .data-label, .result-screen.font-speed .m1-month, .result-screen.font-speed .m2-month-line { font-family: 'Quantico', sans-serif !important; }
 
 /* Webfonts */
 @font-face{ font-family:'Inter'; src:url('./fonts/Inter.woff2') format('woff2'); font-weight:100 900; font-style:normal; font-display:swap; }
