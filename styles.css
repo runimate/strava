@@ -33,7 +33,7 @@
   --ui-m-value-size: 24px;
 }
 
-/* [패치 1] 모든 닫기 버튼: 우측 상단 고정 & 검정색 강제 적용 */
+/* 닫기 버튼: 우측 상단 고정 & 검정색 강제 적용 */
 .close-big,
 .result-screen .screen-close,
 .month-picker .screen-close {
@@ -107,7 +107,6 @@ body.no-scroll{ overflow: hidden; }
 
 /* Icon Buttons (Align) */
 .icon-btn { padding: 0; }
-/* Monthly 모드일 때 정렬 버튼 비활성화 스타일 */
 .button-group.two.disabled { opacity: 0.2; pointer-events: none; filter: grayscale(100%); }
 
 /* Rainbow Button */
@@ -189,7 +188,7 @@ body.no-scroll{ overflow: hidden; }
 .result-value > span, .data-value > span { display:inline-block; transform-origin: left bottom; }
 
 /* =========================================================
-   [통합 패치] PREVIEW & RESULT ALIGNMENT (상단/중앙 정렬)
+   [통합 패치] PREVIEW & RESULT ALIGNMENT
    ========================================================= */
 
 /* --- Type 1 (Stack) --- */
@@ -208,7 +207,7 @@ body.no-scroll{ overflow: hidden; }
     justify-content: flex-start; 
 }
 
-/* T1 Center Align - [수정] 박스 중앙 + 텍스트 중앙 */
+/* T1 Center Align (D1 중앙 정렬 문제 해결) */
 .preview.align-center.type1 .preview-content, 
 .result-wrap.align-center.type1 .result-block { 
     align-items: center !important; 
@@ -272,7 +271,7 @@ body.no-scroll{ overflow: hidden; }
 
 .m1-stack { display: flex; flex-direction: column; gap: var(--ui-stack-gap); width: 100%; align-items: flex-start; }
 
-/* [수정] Monthly M1: 상단(Top) 정렬 적용 */
+/* [수정] Monthly M1: 시각적 상단 정렬 (라벨을 10px 내림) */
 .monthly-type1 .m1-item, 
 .result-wrap.type1 .m1-item {
     display: flex !important; 
@@ -287,13 +286,13 @@ body.no-scroll{ overflow: hidden; }
     margin-right: 12px !important; 
     text-align: left !important; 
     display: block !important; 
-    padding-top: 6px !important; /* 시각적 높이 보정 */
+    padding-top: 10px !important; /* [중요] 시각적 높이 보정을 위해 6px -> 10px로 증가 */
     line-height: 1 !important;
     margin-bottom: 0 !important;
 }
 .monthly-type1 .m1-item .m-value, 
 .result-wrap.type1 .m1-item .result-value {
-    line-height: 0.8 !important; /* 숫자 높이 보정 */
+    line-height: 0.8 !important; 
     align-items: flex-start !important;
 }
 
