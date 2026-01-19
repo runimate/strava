@@ -18,7 +18,7 @@ export const UI_CONFIG = {
       // [Monthly Type 1 - 상단 강조 + 하단 스택] (Monthly는 좌측 정렬 고정)
       m1: {
         monthSize: 16, distanceSize: 44, monthToDistGap: 8, distToStatsGap: 20,
-        statsLabelSize: 12, statsValueSize: 10, statsLvGap: 5, statsStackGap: 14
+        statsLabelSize: 12, statsValueSize: 26, statsLvGap: 5, statsStackGap: 14
       },
 
       // [Monthly Type 2 - 상단 강조 + 하단 가로]
