@@ -23,7 +23,7 @@ export const UI_CONFIG = {
 
       // [Monthly Type 2 - 상단 강조 + 하단 가로]
       m2: {
-        monthSize: 18, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 10,
+        monthSize: 18, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 30,
         statsLabelSize: 14, statsValueSize: 28, statsLvGap: 6, statsColGap: 34
       }
     },
