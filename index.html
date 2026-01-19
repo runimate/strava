@@ -57,7 +57,7 @@
 
         <div class="data-content" id="contentGarmin" style="display:none;">
           <div id="garminConnectBtnWrap">
-             <div style="font-size: 14px; color: #666; font-weight: 500;">
+             <div style="font-size: 14px; color: #777; font-weight: 700;">
                Connect to load your activities
              </div>
              <button id="btnOpenGarminLogin" style="background: #000; color: #75b7ff; border: none; padding: 14px 28px; border-radius: 30px; font-weight: bold; font-size: 14px; cursor: pointer; transition: opacity 0.2s;">
@@ -673,7 +673,7 @@
           if(el.garminConnectBtnWrap) el.garminConnectBtnWrap.style.display = 'none';
           if(el.garminCard) el.garminCard.style.display = 'flex';
       } else { 
-          if(el.garminConnectBtnWrap) el.garminConnectBtnWrap.style.display = 'block';
+          if(el.garminConnectBtnWrap) el.garminConnectBtnWrap.style.display = 'flex';
           if(el.garminCard) el.garminCard.style.display = 'none';
       }
     });
@@ -772,12 +772,14 @@
             if (kind === 'strava') { 
                 state.strava = { ...w }; 
                 state.dataType = 'strava'; 
-                if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.style.display = 'none';
+                // [수정] display:none !important를 강제로 주입하여 확실하게 숨김
+                if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.setAttribute('style', 'display: none !important');
                 if(el.stravaCard) el.stravaCard.style.display = 'flex';
             } else { 
                 state.garmin = { ...w }; 
                 state.dataType = 'garmin'; 
-                if(el.garminConnectBtnWrap) el.garminConnectBtnWrap.style.display = 'none';
+                // [수정] display:none !important를 강제로 주입하여 확실하게 숨김
+                if(el.garminConnectBtnWrap) el.garminConnectBtnWrap.setAttribute('style', 'display: none !important');
                 if(el.garminCard) el.garminCard.style.display = 'flex';
             }
             applyDataType(); 
@@ -796,10 +798,10 @@
         updatePreview(); 
         
         if (realStravaWorkouts.length > 0) {
-             if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.style.display = 'none';
+             if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.setAttribute('style', 'display: none !important');
              if(el.stravaCard) el.stravaCard.style.display = 'flex';
         } else {
-             if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.style.display = 'block';
+             if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.setAttribute('style', 'display: flex !important');
              if(el.stravaCard) el.stravaCard.style.display = 'none';
         }
     });
