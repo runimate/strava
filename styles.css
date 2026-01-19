@@ -393,3 +393,27 @@ body.no-scroll{ overflow: hidden; }
 @font-face{ font-family:'DS-Digital'; src:url('./fonts/LCD.woff2') format('woff2'); font-weight:400 900; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Special Gothic Expanded One'; src:url('./fonts/Gothic.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Quantico'; src:url('./fonts/Speed.woff2') format('woff2'); font-weight:400 900; font-style:normal; font-display:swap; }
+
+/* =========================================================
+   [최종 패치] M1, M2 결과화면 간격 동기화 (프리뷰 = 결과 1:1)
+   ========================================================= */
+
+/* 1. M1 결과화면: 불필요한 Flex Gap 제거 */
+/* Daily는 gap이 필요하지만, Monthly는 margin으로 간격을 잡으므로 gap을 없애야 함 */
+.result-wrap.type1.monthly .result-block {
+    gap: 0 !important;
+}
+
+/* 2. M2 결과화면: 중복된 여백 제거 */
+/* 기존 코드의 margin-top: 14px가 위쪽 Distance의 margin-bottom과 중복 적용됨 -> 0으로 제거 */
+.result-wrap.type2.monthly .m2-row {
+    margin-top: 0 !important;
+}
+
+/* (참고) M2 결과화면 세로 정렬 및 갭 초기화는 기존 유지 */
+.result-wrap.type2.monthly .result-block {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0 !important;
+}
