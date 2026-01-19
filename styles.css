@@ -179,8 +179,11 @@ body.no-scroll{ overflow: hidden; }
 
 /* PREVIEW CONTAINER */
 .preview{ border: 2px solid #000; border-radius: 18px; padding: 18px 18px 16px 18px; width: min(240px, 100%); background:#fff; overflow: hidden; transition: color 0.1s; }
-.preview.bg-white{ background:#fff; color:#000; }
-.preview.bg-black{ background:#000; color:#fff; }
+
+/* [수정] 결과 화면(.result-screen)에도 배경색이 적용되도록 선택자 추가 */
+.preview.bg-white, .result-screen.bg-white { background:#fff !important; color:#000 !important; }
+.preview.bg-black, .result-screen.bg-black { background:#000 !important; color:#fff !important; }
+
 .preview.type2 { width: 100% !important; max-width: 100% !important; }
 
 .result-label, .data-label{ font-family: inherit; font-size: var(--ui-label-size); line-height: 1; opacity: 0.8; margin-bottom: var(--ui-label-to-value-gap); display:block; }
@@ -207,7 +210,7 @@ body.no-scroll{ overflow: hidden; }
     justify-content: flex-start; 
 }
 
-/* T1 Center Align (D1 중앙 정렬 문제 해결) */
+/* T1 Center Align (D1 중앙 정렬) */
 .preview.align-center.type1 .preview-content, 
 .result-wrap.align-center.type1 .result-block { 
     align-items: center !important; 
@@ -271,11 +274,11 @@ body.no-scroll{ overflow: hidden; }
 
 .m1-stack { display: flex; flex-direction: column; gap: var(--ui-stack-gap); width: 100%; align-items: flex-start; }
 
-/* [수정] Monthly M1: 시각적 상단 정렬 (라벨을 10px 내림) */
+/* Monthly M1: 시각적 상단 정렬 */
 .monthly-type1 .m1-item, 
 .result-wrap.type1 .m1-item {
     display: flex !important; 
-    align-items: flex-start !important; /* Top align */
+    align-items: flex-start !important; 
     justify-content: flex-start !important; 
     gap: 0 !important;
 }
@@ -286,7 +289,7 @@ body.no-scroll{ overflow: hidden; }
     margin-right: 12px !important; 
     text-align: left !important; 
     display: block !important; 
-    padding-top: 10px !important; /* [중요] 시각적 높이 보정을 위해 6px -> 10px로 증가 */
+    padding-top: 10px !important; 
     line-height: 1 !important;
     margin-bottom: 0 !important;
 }
