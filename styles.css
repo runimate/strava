@@ -33,15 +33,15 @@
   --ui-m-value-size: 24px;
 }
 
-/* [패치 1] 모든 닫기 버튼 (Monthly 포함): 우측 상단 고정 & 검정색 강제 적용 */
+/* [패치 1] 모든 닫기 버튼: 우측 상단 고정 & 검정색 강제 적용 */
 .close-big,
 .result-screen .screen-close,
-.month-picker .screen-close { /* Monthly 닫기 버튼 추가 */
+.month-picker .screen-close {
     position: absolute !important;
     top: 24px !important;
     right: 24px !important;
-    color: #000 !important; /* 무조건 검정색 */
-    z-index: 99999 !important; /* 최상위 노출 */
+    color: #000 !important;
+    z-index: 99999 !important;
     background: transparent !important;
     border: none !important;
     font-size: 40px !important;
@@ -155,21 +155,19 @@ body.no-scroll{ overflow: hidden; }
 .ocr-status{ margin-top: 8px; font-size: 11px; color:#333; display:none; }
 .ocr-status.show{ display:block; }
 
-/* [FIXED] LOGIN BUTTON WRAPS */
-/* [패치 2] 간격 24px로 조정, 중앙 정렬 강화 */
+/* LOGIN BUTTON WRAPS */
 #garminConnectBtnWrap, #stravaConnectBtnWrap {
     width: 100%;
     padding: 20px 0 !important;
-    display: flex; /* !important 제거하여 JS 토글 가능하게 */
+    display: flex;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 24px !important; /* [수정] 간격 넓힘 */
+    gap: 24px !important;
     text-align: center !important;
 }
-#garminConnectBtnWrap > *, #stravaConnectBtnWrap > * { margin: 0 auto !important; } /* 버튼 중앙 정렬 강제 */
+#garminConnectBtnWrap > *, #stravaConnectBtnWrap > * { margin: 0 auto !important; }
 
-/* JS에서 숨김 처리 시 CSS 우선순위 때문에 안 사라지는 현상 방지 */
 #garminConnectBtnWrap[style*="none"],
 #stravaConnectBtnWrap[style*="none"] {
     display: none !important;
@@ -191,7 +189,7 @@ body.no-scroll{ overflow: hidden; }
 .result-value > span, .data-value > span { display:inline-block; transform-origin: left bottom; }
 
 /* =========================================================
-   [패치 4] PREVIEW ALIGNMENT (Center Fix)
+   [통합 패치] PREVIEW & RESULT ALIGNMENT (상단/중앙 정렬)
    ========================================================= */
 
 /* --- Type 1 (Stack) --- */
@@ -210,14 +208,22 @@ body.no-scroll{ overflow: hidden; }
     justify-content: flex-start; 
 }
 
-/* T1 Center Align - [수정] 중앙 정렬 완벽 지원 */
+/* T1 Center Align - [수정] 박스 중앙 + 텍스트 중앙 */
+.preview.align-center.type1 .preview-content, 
+.result-wrap.align-center.type1 .result-block { 
+    align-items: center !important; 
+    text-align: center !important;
+}
 .preview.align-center.type1 .result-item, 
 .result-wrap.align-center.type1 .result-item { 
-    align-items: center; text-align: center; width: 100%;
+    align-items: center !important; 
+    text-align: center !important; 
+    width: 100% !important;
 }
 .preview.align-center.type1 .result-value, 
 .result-wrap.align-center.type1 .result-value {
-    justify-content: center; width: 100%;
+    justify-content: center !important; 
+    width: 100% !important;
 }
 .preview.align-center.type1 .result-value > span, 
 .result-wrap.align-center.type1 .result-value > span {
@@ -266,7 +272,14 @@ body.no-scroll{ overflow: hidden; }
 
 .m1-stack { display: flex; flex-direction: column; gap: var(--ui-stack-gap); width: 100%; align-items: flex-start; }
 
-/* [패치 5] Monthly M1 레이아웃 복구 (이전 세팅값 적용) */
+/* [수정] Monthly M1: 상단(Top) 정렬 적용 */
+.monthly-type1 .m1-item, 
+.result-wrap.type1 .m1-item {
+    display: flex !important; 
+    align-items: flex-start !important; /* Top align */
+    justify-content: flex-start !important; 
+    gap: 0 !important;
+}
 .monthly-type1 .m1-item .m-label, 
 .result-wrap.type1 .m1-item .result-label {
     width: 60px !important; 
@@ -274,19 +287,13 @@ body.no-scroll{ overflow: hidden; }
     margin-right: 12px !important; 
     text-align: left !important; 
     display: block !important; 
-    padding-top: 6px !important; 
+    padding-top: 6px !important; /* 시각적 높이 보정 */
     line-height: 1 !important;
-}
-.monthly-type1 .m1-item, 
-.result-wrap.type1 .m1-item {
-    display: flex !important; 
-    align-items: flex-start !important; 
-    justify-content: flex-start !important; 
-    gap: 0 !important;
+    margin-bottom: 0 !important;
 }
 .monthly-type1 .m1-item .m-value, 
 .result-wrap.type1 .m1-item .result-value {
-    line-height: 0.9 !important; 
+    line-height: 0.8 !important; /* 숫자 높이 보정 */
     align-items: flex-start !important;
 }
 
@@ -379,63 +386,3 @@ body.no-scroll{ overflow: hidden; }
 @font-face{ font-family:'DS-Digital'; src:url('./fonts/LCD.woff2') format('woff2'); font-weight:400 900; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Special Gothic Expanded One'; src:url('./fonts/Gothic.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Quantico'; src:url('./fonts/Speed.woff2') format('woff2'); font-weight:400 900; font-style:normal; font-display:swap; }
-
-/* =========================================================
-   [추가 긴급 패치] M1 상단 정렬 & D1 중앙 정렬 수정
-   ========================================================= */
-
-/* 1. M1 (Monthly Type 1) 텍스트 상단(Top) 정렬 디테일 수정 */
-.monthly-type1 .m1-item,
-.result-wrap.type1 .m1-item {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: flex-start !important; /* 상단 정렬 핵심 */
-    justify-content: flex-start !important;
-    gap: 0 !important;
-}
-
-.monthly-type1 .m1-item .m-label,
-.result-wrap.type1 .m1-item .result-label {
-    /* 라벨이 숫자보다 작으므로 시각적 상단 정렬을 위해 상단 패딩 부여 */
-    padding-top: 6px !important; 
-    line-height: 1 !important;
-    margin-top: 0 !important;
-    
-    /* 너비 고정 */
-    width: 60px !important;
-    min-width: 60px !important;
-    text-align: left !important;
-    display: block !important;
-}
-
-.monthly-type1 .m1-item .m-value,
-.result-wrap.type1 .m1-item .result-value {
-    /* 큰 숫자가 가진 자체 상단 여백(leading)을 없애 라벨과 높이를 맞춤 */
-    line-height: 0.8 !important; 
-    display: flex !important;
-    align-items: flex-start !important;
-}
-
-
-/* 2. D1 (Daily Type 1) 중앙 정렬(Align Center) 시 프레임 가운데로 오게 수정 */
-/* 프리뷰 컨텐츠 전체를 가운데 정렬 */
-.preview.align-center.type1 .preview-content, 
-.result-wrap.align-center.type1 .result-block { 
-    align-items: center !important; /* Flex Column 아이템 가운데 정렬 */
-    text-align: center !important;
-}
-
-/* 개별 아이템(라벨+값)도 가운데 정렬 */
-.preview.align-center.type1 .result-item, 
-.result-wrap.align-center.type1 .result-item { 
-    align-items: center !important; 
-    text-align: center !important;
-    width: 100% !important; /* 너비를 꽉 채워서 중앙 정렬 효과 극대화 */
-}
-
-/* 값(숫자) 영역 가운데 정렬 */
-.preview.align-center.type1 .result-value, 
-.result-wrap.align-center.type1 .result-value {
-    justify-content: center !important;
-    width: 100% !important;
-}
