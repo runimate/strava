@@ -38,7 +38,7 @@ export const UI_CONFIG = {
       d2_l: { labelSize: 12, valueSize: 24, labelToValueGap: 4, colGap: 18 },
       d2_c: { labelSize: 12, valueSize: 24, labelToValueGap: 4, colGap: 24 },
 
-      m1: { monthSize: 14, distanceSize: 38, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 14, statsValueSize: 24, statsLvGap: -15, statsStackGap: 18 },
+      m1: { monthSize: 14, distanceSize: 38, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 14, statsValueSize: 24, statsLvGap: -5, statsStackGap: 18 },
       m2: { monthSize: 18, distanceSize: 42, monthToDistGap: 6, distToStatsGap: 16, statsLabelSize: 16, statsValueSize: 24, statsLvGap: 4, statsColGap: 28 }
     },
 
@@ -52,7 +52,7 @@ export const UI_CONFIG = {
       d2_l: { labelSize: 12, valueSize: 32, labelToValueGap: 4, colGap: 28 },
       d2_c: { labelSize: 12, valueSize: 32, labelToValueGap: 4, colGap: 32 },
 
-      m1: { monthSize: 18, distanceSize: 46, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 14, statsValueSize: 24, statsLvGap: -15, statsStackGap: 18 },
+      m1: { monthSize: 18, distanceSize: 46, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 14, statsValueSize: 30, statsLvGap: -15, statsStackGap: 18 },
       m2: { monthSize: 18, distanceSize: 52, monthToDistGap: 6, distToStatsGap: 16, statsLabelSize: 16, statsValueSize: 30, statsLvGap: 2, statsColGap: 34 }
     },
 
@@ -80,7 +80,7 @@ export const UI_CONFIG = {
       d2_l: { labelSize: 12, valueSize: 24, labelToValueGap: 4, colGap: 24 },
       d2_c: { labelSize: 12, valueSize: 24, labelToValueGap: 4, colGap: 28 },
 
-      m1: { monthSize: 14, distanceSize: 38, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 22, statsLvGap: -15, statsStackGap: 18 },
+      m1: { monthSize: 14, distanceSize: 38, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 26, statsLvGap: -10, statsStackGap: 18 },
       m2: { monthSize: 18, distanceSize: 46, monthToDistGap: 4, distToStatsGap: 16, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 28 }
     }
   }
