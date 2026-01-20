@@ -455,3 +455,12 @@ body.no-scroll{ overflow: hidden; }
 @font-face{ font-family:'DS-Digital'; src:url('./fonts/LCD.woff2') format('woff2'); font-weight:400 900; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Special Gothic Expanded One'; src:url('./fonts/Gothic.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
 @font-face{ font-family:'Quantico'; src:url('./fonts/Speed.woff2') format('woff2'); font-weight:400 900; font-style:normal; font-display:swap; }
+
+/* [추가 패치] 라벨 투명도 제거 (숫자와 동일한 진한 컬러 적용) */
+.result-label, 
+.data-label, 
+.m-label, 
+.m1-item .m-label, 
+.monthly-type1 .m1-item .m-label {
+    opacity: 1 !important;
+}
