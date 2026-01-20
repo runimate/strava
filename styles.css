@@ -192,7 +192,7 @@ body.no-scroll{ overflow: hidden; }
 
 .preview.type2 { width: 100% !important; max-width: 100% !important; }
 
-.result-label, .data-label{ font-family: inherit; font-size: var(--ui-label-size); line-height: 1; opacity: 0.8; margin-bottom: var(--ui-label-to-value-gap); display:block; }
+.result-label, .data-label{ font-family: inherit; font-size: var(--ui-label-size); line-height: 1; opacity: 1; margin-bottom: var(--ui-label-to-value-gap); display:block; }
 .result-value, .data-value{ font-family: inherit; font-size: var(--ui-value-size); line-height: 1; font-weight: 900; display:flex; align-items:flex-end; }
 .result-value > span, .data-value > span { display:inline-block; transform-origin: left bottom; }
 
