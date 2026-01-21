@@ -78,8 +78,8 @@ export const UI_CONFIG = {
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
 
       // [수정] D2 모드 사이즈 대폭 축소 (28 -> 22)
-      d2_l: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 24 },
-      d2_c: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 28 },
+      d2_l: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 28 },
+      d2_c: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 32 },
 
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 36 }
@@ -93,8 +93,8 @@ export const UI_CONFIG = {
       d1_c: { labelSize: 13, valueSize: 32, labelToValueGap: 6, stackGap: 20 },
 
       // [수정] D2 모드 사이즈 축소 (28 -> 20~22)
-      d2_l: { labelSize: 10, valueSize: 20, labelToValueGap: 6, colGap: 24 },
-      d2_c: { labelSize: 10, valueSize: 20, labelToValueGap: 6, colGap: 28 },
+      d2_l: { labelSize: 13, valueSize: 24, labelToValueGap: 6, colGap: 36 },
+      d2_c: { labelSize: 13, valueSize: 24, labelToValueGap: 6, colGap: 36 },
 
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 22, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 24, statsLvGap: 4, statsColGap: 30 }
@@ -108,8 +108,8 @@ export const UI_CONFIG = {
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
 
       // [수정] D2 모드 사이즈 축소 (28 -> 24)
-      d2_l: { labelSize: 11, valueSize: 24, labelToValueGap: 8, colGap: 26 },
-      d2_c: { labelSize: 11, valueSize: 24, labelToValueGap: 6, colGap: 32 },
+      d2_l: { labelSize: 12, valueSize: 24, labelToValueGap: 8, colGap: 32 },
+      d2_c: { labelSize: 12, valueSize: 24, labelToValueGap: 6, colGap: 36 },
 
       m1: { monthSize: 16, distanceSize: 42, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 46, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 32 }
