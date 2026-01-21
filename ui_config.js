@@ -56,64 +56,78 @@ export const UI_CONFIG = {
     },
 
     // =================================================================
-    // [NEW] 6. OPERA 폰트
+    // [NEW] 6. OPERA 폰트 (가로폭이 넓을 수 있음 -> 사이즈 축소)
     // =================================================================
     opera: {
-      // 초기값은 ANTON과 동일하게 설정 (화면 확인 후 미세조정 필요)
       d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-      d2_l: { labelSize: 12, valueSize: 28, labelToValueGap: 10, colGap: 30 },
-      d2_c: { labelSize: 12, valueSize: 28, labelToValueGap: 8, colGap: 40 },
-      m1: { monthSize: 16, distanceSize: 44, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 26, statsLvGap: -20, statsStackGap: 20 },
-      m2: { monthSize: 18, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 14, statsValueSize: 28, statsLvGap: 6, statsColGap: 34 }
+      
+      // [수정] D2 모드 사이즈 축소 (28 -> 24)
+      d2_l: { labelSize: 11, valueSize: 24, labelToValueGap: 8, colGap: 25 },
+      d2_c: { labelSize: 11, valueSize: 24, labelToValueGap: 6, colGap: 30 },
+
+      m1: { monthSize: 16, distanceSize: 42, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
+      m2: { monthSize: 18, distanceSize: 46, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 30 }
     },
 
     // =================================================================
-    // [NEW] 7. MARKER 폰트
+    // [NEW] 7. MARKER 폰트 (두껍고 넓음 -> 더 축소)
     // =================================================================
     marker: {
       d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-      d2_l: { labelSize: 12, valueSize: 28, labelToValueGap: 10, colGap: 30 },
-      d2_c: { labelSize: 12, valueSize: 28, labelToValueGap: 8, colGap: 40 },
-      m1: { monthSize: 16, distanceSize: 44, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 26, statsLvGap: -20, statsStackGap: 20 },
-      m2: { monthSize: 18, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 14, statsValueSize: 28, statsLvGap: 6, statsColGap: 34 }
+
+      // [수정] D2 모드 사이즈 대폭 축소 (28 -> 22)
+      d2_l: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 24 },
+      d2_c: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 28 },
+
+      m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
+      m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 30 }
     },
 
     // =================================================================
-    // [NEW] 8. TYPE 폰트
+    // [NEW] 8. TYPE 폰트 (타자기체, 폭이 일정하지만 넓음)
     // =================================================================
     type: {
-      d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
-      d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-      d2_l: { labelSize: 12, valueSize: 28, labelToValueGap: 10, colGap: 30 },
-      d2_c: { labelSize: 12, valueSize: 28, labelToValueGap: 8, colGap: 40 },
-      m1: { monthSize: 16, distanceSize: 44, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 26, statsLvGap: -20, statsStackGap: 20 },
-      m2: { monthSize: 18, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 14, statsValueSize: 28, statsLvGap: 6, statsColGap: 34 }
+      d1_l: { labelSize: 13, valueSize: 32, labelToValueGap: 8, stackGap: 20 },
+      d1_c: { labelSize: 13, valueSize: 32, labelToValueGap: 6, stackGap: 20 },
+
+      // [수정] D2 모드 사이즈 축소 (28 -> 20~22)
+      d2_l: { labelSize: 10, valueSize: 20, labelToValueGap: 6, colGap: 24 },
+      d2_c: { labelSize: 10, valueSize: 20, labelToValueGap: 6, colGap: 28 },
+
+      m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 22, statsLvGap: -15, statsStackGap: 20 },
+      m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 24, statsLvGap: 4, statsColGap: 30 }
     },
 
     // =================================================================
-    // [NEW] 9. WRITER 폰트
+    // [NEW] 9. WRITER 폰트 (세리프, 약간 넓음)
     // =================================================================
     writer: {
       d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-      d2_l: { labelSize: 12, valueSize: 28, labelToValueGap: 10, colGap: 30 },
-      d2_c: { labelSize: 12, valueSize: 28, labelToValueGap: 8, colGap: 40 },
-      m1: { monthSize: 16, distanceSize: 44, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 26, statsLvGap: -20, statsStackGap: 20 },
-      m2: { monthSize: 18, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 14, statsValueSize: 28, statsLvGap: 6, statsColGap: 34 }
+
+      // [수정] D2 모드 사이즈 축소 (28 -> 24)
+      d2_l: { labelSize: 11, valueSize: 24, labelToValueGap: 8, colGap: 26 },
+      d2_c: { labelSize: 11, valueSize: 24, labelToValueGap: 6, colGap: 32 },
+
+      m1: { monthSize: 16, distanceSize: 42, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
+      m2: { monthSize: 18, distanceSize: 46, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 32 }
     },
 
     // =================================================================
-    // [NEW] 10. GRACE 폰트
+    // [NEW] 10. GRACE 폰트 (필기체, 가독성 위해 작게 조정)
     // =================================================================
     grace: {
-      d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
-      d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-      d2_l: { labelSize: 12, valueSize: 28, labelToValueGap: 10, colGap: 30 },
-      d2_c: { labelSize: 12, valueSize: 28, labelToValueGap: 8, colGap: 40 },
-      m1: { monthSize: 16, distanceSize: 44, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 26, statsLvGap: -20, statsStackGap: 20 },
-      m2: { monthSize: 18, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 14, statsValueSize: 28, statsLvGap: 6, statsColGap: 34 }
+      d1_l: { labelSize: 14, valueSize: 36, labelToValueGap: 6, stackGap: 20 },
+      d1_c: { labelSize: 14, valueSize: 36, labelToValueGap: 4, stackGap: 20 },
+
+      // [수정] D2 모드 사이즈 축소 (28 -> 26, 필기체라 작으면 안보일 수 있어 간격을 줄임)
+      d2_l: { labelSize: 12, valueSize: 26, labelToValueGap: 6, colGap: 22 },
+      d2_c: { labelSize: 12, valueSize: 26, labelToValueGap: 4, colGap: 26 },
+
+      m1: { monthSize: 16, distanceSize: 44, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 26, statsLvGap: -10, statsStackGap: 20 },
+      m2: { monthSize: 18, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 14, statsValueSize: 28, statsLvGap: 4, statsColGap: 30 }
     }
   }
 };
