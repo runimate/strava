@@ -285,6 +285,40 @@
         display: flex; justify-content: center; align-items: center;
         margin-top: 10px; /* 간격 확보 */
     }
+
+    /* =========================================
+       [NEW] MANUAL INPUT UI (터치 최적화)
+       ========================================= */
+    .manual-group { margin-top: 10px; }
+    .manual-row { display: flex; gap: 12px; margin-bottom: 16px; width: 100%; }
+    .manual-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .manual-label { font-size: 11px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* 큰 입력창 스타일 */
+    .big-input {
+        width: 100%; height: 52px; /* 손가락 터치하기 좋은 높이 */
+        background: #f4f4f4; border: 2px solid transparent;
+        border-radius: 12px; font-family: 'Inter', sans-serif;
+        font-size: 20px; font-weight: 800; color: #000;
+        padding: 0 16px; outline: none; box-sizing: border-box;
+        -webkit-appearance: none; transition: border 0.15s, background 0.15s;
+    }
+    .big-input:focus { background: #fff; border-color: #000; }
+    .big-input::placeholder { color: #ccc; }
+
+    /* 페이스 입력 (분:초) 래퍼 */
+    .pace-wrapper { display: flex; align-items: center; gap: 6px; }
+    .big-input.center-text { text-align: center; padding: 0; }
+    .pace-colon { font-size: 20px; font-weight: 900; color: #000; margin-top: -2px; }
+
+    /* 검정 버튼 스타일 */
+    .black-btn {
+        width: 100%; height: 52px; background: #000; color: #fff;
+        border: none; border-radius: 999px; font-size: 16px; font-weight: 800;
+        margin-top: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        transition: transform 0.1s;
+    }
+    .black-btn:active { transform: scale(0.98); }
   </style>
 </head>
 
@@ -294,7 +328,7 @@
       <a class="title title-link" href="#" onclick="window.location.reload(); return false;" title="새로고침">
         RUNIMATE 
       </a>
-      <span class="version" id="btnHiddenManual">v.2.1</span>
+      <span class="version" id="btnHiddenManual">v.2.2</span>
       <div class="author">by JS @runarchive.js</div>
     </header>
 
@@ -390,23 +424,26 @@
 
         <div class="data-content" id="contentManual" style="display:none;">
           <div class="sub-title">Enter Your Record</div>
-          <div class="manual-row">
-            <button class="manual-chip" id="chipDistance">
-              <span class="chip-label">Distance</span>
-              <span class="chip-value" id="manualDistanceText">00.00</span>
-              <span class="chip-unit">Km</span>
-            </button>
-            <button class="manual-chip" id="chipPace">
-              <span class="chip-label">Pace</span>
-              <span class="chip-value" id="manualPaceText">00'00"</span>
-              <span class="chip-unit">/Km</span>
-            </button>
-          </div>
-          <div class="manual-time-line">
-            <span>Time</span>
-            <span id="manualTimeText">00:00:00</span>
+          
+          <div id="manual-input-container" class="manual-group">
+            <div class="manual-row">
+              <div class="manual-col">
+                <label class="manual-label">DISTANCE (Km)</label>
+                <input type="number" id="inputDistance" class="big-input" placeholder="00.00" inputmode="decimal" step="0.01">
+              </div>
+              <div class="manual-col">
+                <label class="manual-label">PACE</label>
+                <div class="pace-wrapper">
+                  <input type="number" id="inputPaceMin" class="big-input center-text" placeholder="mm" inputmode="numeric">
+                  <span class="pace-colon">:</span>
+                  <input type="number" id="inputPaceSec" class="big-input center-text" placeholder="ss" inputmode="numeric">
+                </div>
+              </div>
+            </div>
+            <button id="btnManualApply" class="black-btn">APPLY RECORD</button>
           </div>
         </div>
+
       </div>
     </section>
 
@@ -594,16 +631,6 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-head"><div class="modal-title" id="modalTitle">Input</div><button class="modal-close" id="modalClose" aria-label="Close">×</button></div>
-      <div class="modal-body">
-        <form class="manual-form" id="formDistance"><label class="field-label">Distance (Km)</label><input class="field-input" id="inputDistance" inputmode="decimal" placeholder="e.g. 14.64" /><button class="field-save" type="submit">Save</button></form>
-        <form class="manual-form" id="formPace"><label class="field-label">Pace (mm:ss /Km)</label><div class="pace-grid"><input class="field-input" id="inputPaceMin" inputmode="numeric" placeholder="mm" /><div class="colon">:</div><input class="field-input" id="inputPaceSec" inputmode="numeric" placeholder="ss" /></div><button class="field-save" type="submit">Save</button></form>
-      </div>
-    </div>
-  </div>
-
   <div class="screen-overlay month-picker" id="monthPickerScreen" aria-hidden="true">
     <button class="screen-close" data-close="monthPickerScreen" aria-label="Close">×</button>
     <div class="month-wrap">
@@ -778,11 +805,9 @@
       
       workoutList: $('#workoutList'), garminSelectScreen: $('#garminSelectScreen'),
       
-      chipDistance: $('#chipDistance'), chipPace: $('#chipPace'),
-      manualDistanceText: $('#manualDistanceText'), manualPaceText: $('#manualPaceText'), manualTimeText: $('#manualTimeText'),
-      modalOverlay: $('#modalOverlay'), modalClose: $('#modalClose'), modalTitle: $('#modalTitle'),
-      formDistance: $('#formDistance'), formPace: $('#formPace'),
+      // [Manual New Elements]
       inputDistance: $('#inputDistance'), inputPaceMin: $('#inputPaceMin'), inputPaceSec: $('#inputPaceSec'),
+      btnManualApply: $('#btnManualApply'),
       
       btnGarminList: $('#btnGarminList'),
       garminDateText: $('#garminDateText'), garminDistanceText: $('#garminDistanceText'), garminPaceText: $('#garminPaceText'), garminTimeText: $('#garminTimeText'),
@@ -843,6 +868,7 @@
       if (state.dataType === 'garmin' && state.garmin) d = state.garmin;
       else if (state.dataType === 'strava' && state.strava) d = state.strava;
       else if (state.dataType === 'manual') d = state.manual;
+      else if (state.dataType === 'nrc' && state.daily) d = state.daily;
       
       const kmText = (d.km > 0) ? fmtKmPreview(d.km) : "00.00Km";
       const paceText = (d.paceSec > 0) ? fmtPacePreview(d.paceSec) : "0'00\"";
@@ -1296,36 +1322,28 @@
     if(el.monthPrevYear) el.monthPrevYear.addEventListener('click', () => { state.monthly.year -= 1; el.monthYearText.textContent = state.monthly.year; updatePreview(); });
     if(el.monthNextYear) el.monthNextYear.addEventListener('click', () => { state.monthly.year += 1; el.monthYearText.textContent = state.monthly.year; updatePreview(); });
 
-    // Manual Input
-    el.chipDistance.addEventListener('click', () => {
-      $('#modalTitle').textContent = 'DISTANCE';
-      el.formDistance.style.display = 'block'; el.formPace.style.display = 'none';
-      el.inputDistance.value = ''; openScreen('modalOverlay'); setTimeout(() => el.inputDistance.focus(), 100);
-    });
-    el.chipPace.addEventListener('click', () => {
-      $('#modalTitle').textContent = 'PACE';
-      el.formDistance.style.display = 'none'; el.formPace.style.display = 'block';
-      el.inputPaceMin.value = ''; el.inputPaceSec.value = ''; openScreen('modalOverlay'); setTimeout(() => el.inputPaceMin.focus(), 100);
-    });
-    el.modalClose.addEventListener('click', () => closeScreen('modalOverlay'));
-    
-    function recalcManualTime() {
-        if(state.manual.km > 0 && state.manual.paceSec > 0) {
-            state.manual.timeSec = state.manual.km * state.manual.paceSec;
-            if($('#manualTimeText')) $('#manualTimeText').textContent = fmtTimePreview(state.manual.timeSec);
+    // [New Manual Input Logic]
+    if (el.btnManualApply) {
+        el.btnManualApply.addEventListener('click', () => {
+            const dist = parseFloat(el.inputDistance.value) || 0;
+            const pMin = parseInt(el.inputPaceMin.value) || 0;
+            const pSec = parseInt(el.inputPaceSec.value) || 0;
+            const totalPace = (pMin * 60) + pSec;
+            
+            state.manual.km = dist;
+            state.manual.paceSec = totalPace;
+            
+            // 자동 시간 계산
+            if (dist > 0 && totalPace > 0) {
+                state.manual.timeSec = dist * totalPace;
+            } else {
+                state.manual.timeSec = 0;
+            }
+            
             updatePreview();
-        }
+            alert(`Record Applied!\nDist: ${dist}km, Pace: ${pMin}'${pad2(pSec)}"`);
+        });
     }
-
-    el.formDistance.addEventListener('submit', (e) => {
-      e.preventDefault(); const val = parseFloat(el.inputDistance.value);
-      if (!isNaN(val)) { state.manual.km = val; el.manualDistanceText.textContent = val.toFixed(2); recalcManualTime(); closeScreen('modalOverlay'); }
-    });
-    el.formPace.addEventListener('submit', (e) => {
-      e.preventDefault(); const m = parseInt(el.inputPaceMin.value) || 0; const s = parseInt(el.inputPaceSec.value) || 0;
-      const total = m * 60 + s;
-      if (total > 0) { state.manual.paceSec = total; el.manualPaceText.textContent = fmtPacePreview(total); recalcManualTime(); closeScreen('modalOverlay'); }
-    });
 
     // [Manual Hidden Trigger]
     let hiddenClickCount = 0;
