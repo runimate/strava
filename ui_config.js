@@ -78,8 +78,8 @@ export const UI_CONFIG = {
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
 
       // [수정] D2 모드 사이즈 대폭 축소 (28 -> 22)
-      d2_l: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 28 },
-      d2_c: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 32 },
+      d2_l: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 40 },
+      d2_c: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 40 },
 
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 36 }
