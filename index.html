@@ -412,12 +412,21 @@
 
     <section class="section">
       <span class="section-label">FONT</span>
-      <div class="button-group font-group no-wrap" id="fontGroup">
-        <button class="toggle-btn font-btn font-anton active" data-font="anton">ANTON</button>
-        <button class="toggle-btn font-btn font-dots" data-font="dots">DOTS</button>
-        <button class="toggle-btn font-btn font-lcd" data-font="lcd">LCD</button>
-        <button class="toggle-btn font-btn font-gothic" data-font="gothic">GOTHIC</button>
-        <button class="toggle-btn font-btn font-speed" data-font="speed">SPEED</button>
+      <div id="fontGroup">
+          <div class="button-group font-group no-wrap">
+            <button class="toggle-btn font-btn font-anton active" data-font="anton">ANTON</button>
+            <button class="toggle-btn font-btn font-dots" data-font="dots">DOTS</button>
+            <button class="toggle-btn font-btn font-lcd" data-font="lcd">LCD</button>
+            <button class="toggle-btn font-btn font-gothic" data-font="gothic">GOTHIC</button>
+            <button class="toggle-btn font-btn font-speed" data-font="speed">SPEED</button>
+          </div>
+          <div class="button-group font-group no-wrap" style="margin-top: 8px;">
+            <button class="toggle-btn font-btn font-opera" data-font="opera">OPERA</button>
+            <button class="toggle-btn font-btn font-marker" data-font="marker">MARKER</button>
+            <button class="toggle-btn font-btn font-type" data-font="type">TYPE</button>
+            <button class="toggle-btn font-btn font-writer" data-font="writer">WRITER</button>
+            <button class="toggle-btn font-btn font-grace" data-font="grace">GRACE</button>
+          </div>
       </div>
     </section>
 
@@ -1128,7 +1137,7 @@
     function applyFont() {
       el.fontGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.font === state.font));
       [el.previewDaily, el.previewMonthly, el.resultScreen].forEach(t => {
-        t.classList.remove('font-anton', 'font-dots', 'font-lcd', 'font-gothic', 'font-speed');
+        t.classList.remove('font-anton', 'font-dots', 'font-lcd', 'font-gothic', 'font-speed', 'font-opera', 'font-marker', 'font-type', 'font-writer', 'font-grace');
         t.classList.add(`font-${state.font}`);
       });
       applyUIConfigToRoot(state);
