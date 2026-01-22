@@ -88,7 +88,7 @@ export const UI_CONFIG = {
       d2_l: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 30 },
       d2_c: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 30 },
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 22, statsLvGap: -15, statsStackGap: 20 },
-      m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 24, statsLvGap: 4, statsColGap: 30 }
+      m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 11, statsValueSize: 25, statsLvGap: 8, statsColGap: 30 }
     },
 
     // =================================================================
