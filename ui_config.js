@@ -71,10 +71,10 @@ export const UI_CONFIG = {
     // 7. MARKER 폰트
     // =================================================================
     marker: {
-      d1_l: { labelSize: 12, valueSize: 32, labelToValueGap: 7, stackGap: 24 },
-      d1_c: { labelSize: 12, valueSize: 32, labelToValueGap: 7, stackGap: 24 },
-      d2_l: { labelSize: 11, valueSize: 23, labelToValueGap: 6, colGap: 30 },
-      d2_c: { labelSize: 11, valueSize: 23, labelToValueGap: 6, colGap: 30 },
+      d1_l: { labelSize: 12, valueSize: 30, labelToValueGap: 7, stackGap: 24 },
+      d1_c: { labelSize: 12, valueSize: 30, labelToValueGap: 7, stackGap: 24 },
+      d2_l: { labelSize: 11, valueSize: 23, labelToValueGap: 6, colGap: 27 },
+      d2_c: { labelSize: 11, valueSize: 23, labelToValueGap: 6, colGap: 27 },
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 42, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 36 }
     },
@@ -85,8 +85,8 @@ export const UI_CONFIG = {
     sten: {
       d1_l: { labelSize: 13, valueSize: 32, labelToValueGap: 7, stackGap: 24 },
       d1_c: { labelSize: 13, valueSize: 32, labelToValueGap: 7, stackGap: 24 },
-      d2_l: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 30 },
-      d2_c: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 30 },
+      d2_l: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 32 },
+      d2_c: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 32 },
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 22, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 22, statsLabelSize: 11, statsValueSize: 23, statsLvGap: 12, statsColGap: 30 }
     },
