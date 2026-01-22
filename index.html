@@ -16,308 +16,103 @@
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#ffffff" />
   <style>
-    /* ==========================================================
-       [UI CONFIG SYSTEM] 동적 디자인 제어용 CSS 변수 적용
-       ========================================================== */
+    /* ... (기존 스타일 유지) ... */
     :root {
-      /* 기본값 */
       --ui-label-size: 12px;
       --ui-value-size: 34px;
       --ui-label-to-value-gap: 8px;
       --ui-stack-gap: 18px;
       --ui-col-gap: 24px;
-      
-      /* Monthly 전용 */
       --ui-month-size: 14px;
       --ui-distance-size: 36px;
       --ui-month-to-dist-gap: 8px;
       --ui-dist-to-stats-gap: 14px;
     }
+    .result-label, .data-label { font-family: inherit !important; font-size: var(--ui-label-size) !important; line-height: 1; opacity: 0.8; margin-bottom: var(--ui-label-to-value-gap) !important; }
+    .font-anton .result-label { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; font-weight: 900 !important; }
+    .result-value, .data-value { font-family: inherit !important; font-size: var(--ui-value-size) !important; line-height: 1; font-weight: 900; }
+    
+    .preview.type1 .preview-content, .result-wrap.type1 .result-block { display: flex; flex-direction: column; gap: var(--ui-stack-gap) !important; }
+    .preview.type1 .result-item, .result-wrap.type1 .result-item { display: flex; flex-direction: column; gap: 0 !important; width: 100%; }
+    .preview.align-left.type1 .result-item, .result-wrap.align-left.type1 .result-item { align-items: flex-start !important; text-align: left !important; }
+    .preview.align-center.type1 .result-item, .result-wrap.align-center.type1 .result-item { align-items: center !important; text-align: center !important; }
 
-    /* ----------------------------------------------------
-       [PREVIEW & RESULT 레이아웃 - FIXED]
-       ---------------------------------------------------- */
-
-    /* [D1 & D2 공통] 라벨과 값의 스타일 */
-    .result-label, .data-label {
-        font-family: inherit !important;
-        font-size: var(--ui-label-size) !important;
-        line-height: 1;
-        opacity: 0.8;
-        margin-bottom: var(--ui-label-to-value-gap) !important; 
-    }
-    
-    .font-anton .result-label {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-        font-weight: 900 !important;
-    }
-
-    .result-value, .data-value {
-        font-family: inherit !important;
-        font-size: var(--ui-value-size) !important;
-        line-height: 1;
-        font-weight: 900;
-    }
-    
-    /* [D1] Daily Type 1 (세로 스택) */
-    .preview.type1 .preview-content, 
-    .result-wrap.type1 .result-block {
-        display: flex; flex-direction: column;
-        gap: var(--ui-stack-gap) !important; 
-    }
-    
-    /* [D1 아이템 정렬 로직 수정] */
-    .preview.type1 .result-item,
-    .result-wrap.type1 .result-item {
-        display: flex; flex-direction: column;
-        gap: 0 !important; 
-        width: 100%; /* 전체 너비 차지하도록 수정하여 text-align 적용 가능하게 함 */
-    }
-    
-    /* 좌측 정렬 모드 */
-    .preview.align-left.type1 .result-item,
-    .result-wrap.align-left.type1 .result-item {
-        align-items: flex-start !important;
-        text-align: left !important;
-    }
-    
-    /* 중앙 정렬 모드 */
-    .preview.align-center.type1 .result-item,
-    .result-wrap.align-center.type1 .result-item {
-        align-items: center !important;
-        text-align: center !important;
-    }
-
-    /* [D2] Daily Type 2 (가로 나열) */
-    .preview.type2 .preview-content,
-    .result-wrap.type2 .result-block {
-        display: flex !important;
-        flex-direction: row;
-        gap: var(--ui-col-gap) !important;
-        /* 정렬은 CSS 클래스에 위임 */
-    }
-    
-    /* D2 아이템 */
-    .preview.type2 .result-item,
-    .result-wrap.type2 .result-item {
-        display: flex; 
-        flex-direction: column;
-        gap: 0 !important;
-        flex: 0 0 auto;
-    }
-    
-    /* D2 정렬 */
+    .preview.type2 .preview-content, .result-wrap.type2 .result-block { display: flex !important; flex-direction: row; gap: var(--ui-col-gap) !important; }
+    .preview.type2 .result-item, .result-wrap.type2 .result-item { display: flex; flex-direction: column; gap: 0 !important; flex: 0 0 auto; }
     .preview.align-left.type2 .preview-content { justify-content: flex-start; }
     .preview.align-left.type2 .result-item { align-items: flex-start; text-align: left; }
-    
     .preview.align-center.type2 .preview-content { justify-content: center; }
     .preview.align-center.type2 .result-item { align-items: center; text-align: center; }
 
-    /* [M1] Monthly Type 1 (상단 + 하단 스택) */
-    .monthly-type1 {
-        display: flex; flex-direction: column; align-items: flex-start !important; width: 100%;
-    }
-    .m1-month {
-        font-size: var(--ui-month-size) !important;
-        margin-bottom: var(--ui-month-to-dist-gap) !important;
-        font-weight: 700;
-    }
-    .m1-distance .m1-distance-value {
-        font-size: var(--ui-distance-size) !important;
-        font-weight: 900; line-height: 0.9;
-    }
+    .monthly-type1 { display: flex; flex-direction: column; align-items: flex-start !important; width: 100%; }
+    .m1-month { font-size: var(--ui-month-size) !important; margin-bottom: var(--ui-month-to-dist-gap) !important; font-weight: 700; }
+    .m1-distance .m1-distance-value { font-size: var(--ui-distance-size) !important; font-weight: 900; line-height: 0.9; }
     .m1-distance { margin-bottom: var(--ui-dist-to-stats-gap) !important; }
-    .m1-stack {
-        display: flex; flex-direction: column;
-        gap: var(--ui-stack-gap) !important; width: 100%;
-        align-items: flex-start !important;
-    }
-    .m1-item {
-        display: flex; flex-direction: row; 
-        justify-content: flex-start !important; 
-        align-items: center; width: 100%;
-        gap: 0 !important; 
-    }
-    .m1-item .m-label { 
-        font-size: var(--ui-label-size) !important; 
-        margin-right: var(--ui-label-to-value-gap) !important; 
-        margin-bottom: 0 !important; 
-    }
-    .m1-item .m-value { 
-        font-size: var(--ui-value-size) !important; 
-        font-weight: 900; 
-    }
+    .m1-stack { display: flex; flex-direction: column; gap: var(--ui-stack-gap) !important; width: 100%; align-items: flex-start !important; }
+    .m1-item { display: flex; flex-direction: row; justify-content: flex-start !important; align-items: center; width: 100%; gap: 0 !important; }
+    .m1-item .m-label { font-size: var(--ui-label-size) !important; margin-right: var(--ui-label-to-value-gap) !important; margin-bottom: 0 !important; }
+    .m1-item .m-value { font-size: var(--ui-value-size) !important; font-weight: 900; }
 
-    /* [M2] Monthly Type 2 (상단 + 하단 가로) */
-    .monthly-type2 {
-        display: flex; flex-direction: column; width: 100%; align-items: flex-start; 
-    }
-    .m2-month-line {
-        font-size: var(--ui-month-size) !important;
-        margin-bottom: var(--ui-month-to-dist-gap) !important;
-        font-weight: 700;
-    }
-    .m2-distance .m2-distance-value {
-        font-size: var(--ui-distance-size) !important;
-        font-weight: 900; line-height: 0.9;
-    }
+    .monthly-type2 { display: flex; flex-direction: column; width: 100%; align-items: flex-start; }
+    .m2-month-line { font-size: var(--ui-month-size) !important; margin-bottom: var(--ui-month-to-dist-gap) !important; font-weight: 700; }
+    .m2-distance .m2-distance-value { font-size: var(--ui-distance-size) !important; font-weight: 900; line-height: 0.9; }
     .m2-distance { margin-bottom: var(--ui-dist-to-stats-gap) !important; }
-    
-    .m2-row {
-        display: flex !important; 
-        flex-direction: row;
-        justify-content: flex-start; 
-        gap: var(--ui-col-gap) !important; 
-        width: 100%;
-    }
-    .m2-row .data-item {
-        display: flex; flex-direction: column;
-        gap: 0 !important; 
-        flex: 0 0 auto; 
-    }
-    .m2-row .data-label { 
-        font-size: var(--ui-label-size) !important; 
-        margin-bottom: var(--ui-label-to-value-gap) !important;
-    }
+    .m2-row { display: flex !important; flex-direction: row; justify-content: flex-start; gap: var(--ui-col-gap) !important; width: 100%; }
+    .m2-row .data-item { display: flex; flex-direction: column; gap: 0 !important; flex: 0 0 auto; }
+    .m2-row .data-label { font-size: var(--ui-label-size) !important; margin-bottom: var(--ui-label-to-value-gap) !important; }
     .m2-row .data-value { font-size: var(--ui-value-size) !important; }
 
-    /* ----------------------------------------------------
-       [기존 필수 스타일]
-       ---------------------------------------------------- */
-    .garmin-card, .workout-item {
-        width: 100% !important; box-sizing: border-box !important;
-        display: flex; justify-content: space-between !important;
-        align-items: center !important;
-    }
-    .w-left, .garmin-card-left { 
-        flex: 1 !important; min-width: 0 !important; gap: 6px !important;
-    }
-    .w-stats span, .garmin-stat {
-        font-size: 14px !important; font-weight: 900 !important; line-height: 1.2 !important;
-    }
+    .garmin-card, .workout-item { width: 100% !important; box-sizing: border-box !important; display: flex; justify-content: space-between !important; align-items: center !important; }
+    .w-left, .garmin-card-left { flex: 1 !important; min-width: 0 !important; gap: 6px !important; }
+    .w-stats span, .garmin-stat { font-size: 14px !important; font-weight: 900 !important; line-height: 1.2 !important; }
     .hamburger { display: flex; flex-direction: column; gap: 3px; width: 18px; }
     .hamburger span { display: block; width: 100%; height: 2px; background: #000; border-radius: 2px; }
-    .w-arrow { 
-        display: block !important; font-size: 24px !important; font-weight: 900 !important; 
-        color: #000 !important; line-height: 1 !important;
-    }
-    .garmin-list-btn, .w-arrow-wrap {
-        width: auto !important; height: auto !important; padding: 0 0 0 14px !important;
-        background: transparent !important; border: none !important; cursor: pointer !important;
-        flex-shrink: 0 !important; display: flex !important;
-        align-items: center !important; justify-content: center !important;
-    }
-    #garminConnectBtnWrap, #stravaConnectBtnWrap {
-        width: 100% !important; padding: 40px 0 !important; text-align: center !important; display: block;
-    }
+    .w-arrow { display: block !important; font-size: 24px !important; font-weight: 900 !important; color: #000 !important; line-height: 1 !important; }
+    .garmin-list-btn, .w-arrow-wrap { width: auto !important; height: auto !important; padding: 0 0 0 14px !important; background: transparent !important; border: none !important; cursor: pointer !important; flex-shrink: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+    #garminConnectBtnWrap, #stravaConnectBtnWrap { width: 100% !important; padding: 40px 0 !important; text-align: center !important; display: block; }
     #garminConnectBtnWrap button, #stravaConnectBtnWrap button { display: inline-block; margin: 0 auto; }
     
-    .run-btn {
-        position: fixed !important; bottom: 30px !important; left: 50% !important;
-        transform: translateX(-50%) !important; z-index: 5000 !important;
-        cursor: pointer !important; background: #ff9000 !important; color: #000 !important;
-        width: min(360px, calc(100% - 40px)) !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
+    .run-btn { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 5000 !important; cursor: pointer !important; background: #ff9000 !important; color: #000 !important; width: min(360px, calc(100% - 40px)) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .run-btn:active { transform: translateX(-50%) scale(0.98) !important; }
     
-    #garminLoginScreen {
-      display: none; position: fixed !important; top: 0; left: 0; bottom: 0; right: 0;
-      width: 100%; height: 100%; background-color: var(--garmin, #76B6FF) !important; 
-      z-index: 99999 !important; pointer-events: auto !important;
-      flex-direction: column; overflow-y: auto; padding-bottom: 120px !important; 
-    }
+    #garminLoginScreen { display: none; position: fixed !important; top: 0; left: 0; bottom: 0; right: 0; width: 100%; height: 100%; background-color: var(--garmin, #76B6FF) !important; z-index: 99999 !important; pointer-events: auto !important; flex-direction: column; overflow-y: auto; padding-bottom: 120px !important; }
     #garminLoginScreen.show { display: flex !important; }
     .gc-input::placeholder { color: #000 !important; opacity: 1 !important; }
     .gc-input { color: #000 !important; border-bottom: 2px solid #000 !important; }
-    .gc-cta {
-      position: fixed !important; bottom: 30px !important; left: 50% !important;
-      transform: translateX(-50%) !important; width: min(360px, calc(100% - 60px)) !important;
-      z-index: 100000 !important; background: #000 !important; color: #fff !important;
-      cursor: pointer !important; margin: 0 !important;
-    }
+    .gc-cta { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: min(360px, calc(100% - 60px)) !important; z-index: 100000 !important; background: #000 !important; color: #fff !important; cursor: pointer !important; margin: 0 !important; }
     .select-workout { background-color: #fff !important; z-index: 99999 !important; }
-    .result-screen {
-        z-index: 2147483647 !important; position: fixed !important;
-        top: 0; left: 0; width: 100%; height: 100%; background: #fff;
-    }
-    .result-wrap {
-        width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-        padding: 26px; box-sizing: border-box;
-    }
+    .result-screen { z-index: 2147483647 !important; position: fixed !important; top: 0; left: 0; width: 100%; height: 100%; background: #fff; }
+    .result-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 26px; box-sizing: border-box; }
     .result-block { width: 100%; }
     .data-empty { min-height: 20px; }
     .screen-close { cursor: pointer; z-index: 999999; }
     .w-date, .garmin-date { font-size: 12px !important; font-weight: 900 !important; color: #000; }
 
-    /* 탭 스타일 */
-    .data-tabs { 
-        display: flex; width: 100%; gap: 10px !important;
-    }
+    .data-tabs { display: flex; width: 100%; gap: 10px !important; }
     .data-tab { flex: 1; text-align: center; }
     .data-tab.manual-hidden { display: none !important; }
     .data-tab.manual-show { display: block !important; }
     .version { cursor: pointer; user-select: none; }
 
-    /* 월 선택 버튼 스타일 */
-    .month-block {
-        width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 24px;
-    }
-    .month-label {
-        font-size: 12px; font-weight: 700; opacity: 0.6; margin-bottom: 8px;
-    }
-    .month-btn {
-        background: #fff; border: 2px solid #000; border-radius: 30px;
-        font-size: 16px; font-weight: 700; color: #000; cursor: pointer;
-        padding: 10px 24px; transition: transform 0.1s;
-    }
+    .month-block { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 24px; }
+    .month-label { font-size: 12px; font-weight: 700; opacity: 0.6; margin-bottom: 8px; }
+    .month-btn { background: #fff; border: 2px solid #000; border-radius: 30px; font-size: 16px; font-weight: 700; color: #000; cursor: pointer; padding: 10px 24px; transition: transform 0.1s; }
     .month-btn:active { transform: scale(0.97); }
 
-    /* [수정] NRC 업로드 버튼이 카드 안으로 들어오도록 강제 조정 */
-    #contentNrc, #contentManual {
-        width: 100%;
-        box-sizing: border-box;
-    }
-    .upload-btn {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        display: flex; justify-content: center; align-items: center;
-        margin-top: 10px; /* 간격 확보 */
-    }
+    #contentNrc, #contentManual { width: 100%; box-sizing: border-box; }
+    .upload-btn { width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; display: flex; justify-content: center; align-items: center; margin-top: 10px; }
 
-    /* =========================================
-       [NEW] MANUAL INPUT UI (터치 최적화)
-       ========================================= */
     .manual-group { margin-top: 10px; }
     .manual-row { display: flex; gap: 12px; margin-bottom: 16px; width: 100%; }
     .manual-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
     .manual-label { font-size: 11px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    /* 큰 입력창 스타일 */
-    .big-input {
-        width: 100%; height: 52px; /* 손가락 터치하기 좋은 높이 */
-        background: #f4f4f4; border: 2px solid transparent;
-        border-radius: 12px; font-family: 'Inter', sans-serif;
-        font-size: 20px; font-weight: 800; color: #000;
-        padding: 0 16px; outline: none; box-sizing: border-box;
-        -webkit-appearance: none; transition: border 0.15s, background 0.15s;
-    }
+    .big-input { width: 100%; height: 52px; background: #f4f4f4; border: 2px solid transparent; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 800; color: #000; padding: 0 16px; outline: none; box-sizing: border-box; -webkit-appearance: none; transition: border 0.15s, background 0.15s; }
     .big-input:focus { background: #fff; border-color: #000; }
     .big-input::placeholder { color: #ccc; }
-
-    /* 페이스 입력 (분:초) 래퍼 */
     .pace-wrapper { display: flex; align-items: center; gap: 6px; }
     .big-input.center-text { text-align: center; padding: 0; }
     .pace-colon { font-size: 20px; font-weight: 900; color: #000; margin-top: -2px; }
-
-    /* 검정 버튼 스타일 */
-    .black-btn {
-        width: 100%; height: 52px; background: #000; color: #fff;
-        border: none; border-radius: 999px; font-size: 16px; font-weight: 800;
-        margin-top: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-        transition: transform 0.1s;
-    }
+    .black-btn { width: 100%; height: 52px; background: #000; color: #fff; border: none; border-radius: 999px; font-size: 16px; font-weight: 800; margin-top: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
     .black-btn:active { transform: scale(0.98); }
   </style>
 </head>
@@ -328,7 +123,7 @@
       <a class="title title-link" href="#" onclick="window.location.reload(); return false;" title="새로고침">
         RUNIMATE 
       </a>
-      <span class="version" id="btnHiddenManual">v.2.2</span>
+      <span class="version" id="btnHiddenManual">v.2.3</span>
       <div class="author">by JS @runarchive.js</div>
     </header>
 
@@ -460,9 +255,9 @@
           <div class="button-group font-group no-wrap" style="margin-top: 8px;">
             <button class="toggle-btn font-btn font-opera" data-font="opera">OPERA</button>
             <button class="toggle-btn font-btn font-marker" data-font="marker">MKR</button>
-            <button class="toggle-btn font-btn font-type" data-font="type">TYPE</button>
+            <button class="toggle-btn font-btn font-sten" data-font="sten">STEN</button>
             <button class="toggle-btn font-btn font-writer" data-font="writer">WRITE</button>
-            <button class="toggle-btn font-btn font-grace" data-font="grace">GRACE</button>
+            <button class="toggle-btn font-btn font-flip" data-font="flip">FLIP</button>
           </div>
       </div>
     </section>
@@ -687,7 +482,7 @@
     const pad2 = (n) => String(n).padStart(2, '0');
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-    // [포맷팅 함수]
+    // [포맷팅 함수] ... (기존 유지)
     function fmtKmPreview(km) { return `${Number(km || 0).toFixed(2)}Km`; }
     function fmtRunsPreview(r) { return pad2(Number(r || 0)); }
     function fmtPacePreview(sec) {
@@ -864,6 +659,7 @@
     }
 
     function updatePreview() {
+      // (기존 업데이트 로직 유지)
       let d = { km: 0, paceSec: 0, timeSec: 0 };
       if (state.dataType === 'garmin' && state.garmin) d = state.garmin;
       else if (state.dataType === 'strava' && state.strava) d = state.strava;
@@ -972,7 +768,7 @@
       }
     }
 
-    // --- GARMIN LOGIC ---
+    // --- GARMIN LOGIC (기존 유지) ---
     el.tabGarmin.addEventListener('click', () => {
       state.dataType = 'garmin'; applyDataType(); updatePreview();
       if (realGarminWorkouts.length > 0) { 
@@ -1140,6 +936,28 @@
          el.alignControlPanel.classList.remove('disabled');
       }
 
+      // [NEW] Flip Font Button Disable/Enable Logic for Monthly Mode
+      const btnFlip = document.querySelector('button[data-font="flip"]');
+      if(btnFlip) {
+          if(!isDaily) {
+              // Monthly Mode: Disable Flip
+              btnFlip.disabled = true;
+              btnFlip.style.opacity = '0.3';
+              btnFlip.style.pointerEvents = 'none';
+              // 만약 현재 폰트가 flip이면 다른 폰트로 강제 변경 (예: anton)
+              if(state.font === 'flip') {
+                  state.font = 'anton';
+                  // UI 업데이트를 위해 applyFont 호출
+                  applyFont();
+              }
+          } else {
+              // Daily Mode: Enable Flip
+              btnFlip.disabled = false;
+              btnFlip.style.opacity = '1';
+              btnFlip.style.pointerEvents = 'auto';
+          }
+      }
+
       if(!isDaily) {
           el.dataEmpty.style.display = 'none';
           if(el.dataPanelHead) el.dataPanelHead.style.display = 'none';
@@ -1163,7 +981,7 @@
     function applyFont() {
       el.fontGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.font === state.font));
       [el.previewDaily, el.previewMonthly, el.resultScreen].forEach(t => {
-        t.classList.remove('font-anton', 'font-dots', 'font-lcd', 'font-gothic', 'font-speed', 'font-opera', 'font-marker', 'font-type', 'font-writer', 'font-grace');
+        t.classList.remove('font-anton', 'font-dots', 'font-lcd', 'font-gothic', 'font-speed', 'font-opera', 'font-marker', 'font-sten', 'font-writer', 'font-flip');
         t.classList.add(`font-${state.font}`);
       });
       applyUIConfigToRoot(state);
@@ -1266,7 +1084,7 @@
        b.addEventListener('click', () => { state.font = b.dataset.font; applyFont(); });
     });
 
-    // NRC / OCR
+    // NRC / OCR (기존 유지)
     if (el.btnUploadNrc && el.fileNrc) {
         el.btnUploadNrc.addEventListener('click', () => { el.fileNrc.value = ''; el.fileNrc.click(); });
         el.fileNrc.addEventListener('change', async (e) => {
