@@ -56,76 +56,62 @@ export const UI_CONFIG = {
     },
 
     // =================================================================
-    // [NEW] 6. OPERA 폰트 (가로폭이 넓을 수 있음 -> 사이즈 축소)
+    // 6. OPERA 폰트
     // =================================================================
     opera: {
       d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-      
-      // [수정] D2 모드 사이즈 축소 (28 -> 24)
       d2_l: { labelSize: 11, valueSize: 24, labelToValueGap: 8, colGap: 25 },
       d2_c: { labelSize: 11, valueSize: 24, labelToValueGap: 6, colGap: 30 },
-
       m1: { monthSize: 16, distanceSize: 42, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 46, monthToDistGap: 10, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 30 }
     },
 
     // =================================================================
-    // [NEW] 7. MARKER 폰트 (두껍고 넓음 -> 더 축소)
+    // 7. MARKER 폰트
     // =================================================================
     marker: {
       d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-
-      // [수정] D2 모드 사이즈 대폭 축소 (28 -> 22)
       d2_l: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 40 },
       d2_c: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 40 },
-
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 36 }
     },
 
     // =================================================================
-    // [NEW] 8. TYPE 폰트 (타자기체, 폭이 일정하지만 넓음)
+    // [NEW] 8. STEN 폰트 (기존 TYPE 대체)
     // =================================================================
-    type: {
+    sten: {
       d1_l: { labelSize: 13, valueSize: 32, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 32, labelToValueGap: 6, stackGap: 20 },
-
-      // [수정] D2 모드 사이즈 축소 (28 -> 20~22)
       d2_l: { labelSize: 13, valueSize: 28, labelToValueGap: 6, colGap: 46 },
       d2_c: { labelSize: 13, valueSize: 28, labelToValueGap: 6, colGap: 46 },
-
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 22, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 24, statsLvGap: 4, statsColGap: 30 }
     },
 
     // =================================================================
-    // [NEW] 9. WRITER 폰트 (세리프, 약간 넓음)
+    // 9. WRITER 폰트
     // =================================================================
     writer: {
       d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-
-      // [수정] D2 모드 사이즈 축소 (28 -> 24)
       d2_l: { labelSize: 12, valueSize: 24, labelToValueGap: 8, colGap: 32 },
       d2_c: { labelSize: 12, valueSize: 24, labelToValueGap: 6, colGap: 36 },
-
       m1: { monthSize: 16, distanceSize: 42, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 46, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 32 }
     },
 
     // =================================================================
-    // [NEW] 10. GRACE 폰트 (필기체, 가독성 위해 작게 조정)
+    // [NEW] 10. FLIP 폰트 (기존 GRACE 대체)
     // =================================================================
-    grace: {
+    flip: {
       d1_l: { labelSize: 14, valueSize: 42, labelToValueGap: 6, stackGap: 20 },
       d1_c: { labelSize: 14, valueSize: 42, labelToValueGap: 4, stackGap: 20 },
-
-      // [수정] D2 모드 사이즈 축소 (28 -> 26, 필기체라 작으면 안보일 수 있어 간격을 줄임)
       d2_l: { labelSize: 14, valueSize: 40, labelToValueGap: 6, colGap: 40 },
       d2_c: { labelSize: 14, valueSize: 40, labelToValueGap: 4, colGap: 40 },
-
+      // Monthly 설정은 존재하지만 index.html 로직에서 선택 불가 처리됨
       m1: { monthSize: 20, distanceSize: 48, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 16, statsValueSize: 26, statsLvGap: -10, statsStackGap: 20 },
       m2: { monthSize: 20, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 20, statsLabelSize: 16, statsValueSize: 32, statsLvGap: 4, statsColGap: 40 }
     }
@@ -133,7 +119,6 @@ export const UI_CONFIG = {
 };
 
 export function applyUIConfigToRoot(state) {
-  // 로직은 변경 없음
   const { font, recordType, layout, align } = state;
   const fontConfig = UI_CONFIG.fonts[font] || UI_CONFIG.fonts.anton;
   
