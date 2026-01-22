@@ -61,8 +61,8 @@ export const UI_CONFIG = {
     opera: {
       d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-      d2_l: { labelSize: 11, valueSize: 24, labelToValueGap: 8, colGap: 25 },
-      d2_c: { labelSize: 11, valueSize: 24, labelToValueGap: 6, colGap: 30 },
+      d2_l: { labelSize: 11, valueSize: 24, labelToValueGap: 8, colGap: 24 },
+      d2_c: { labelSize: 11, valueSize: 24, labelToValueGap: 8, colGap: 24 },
       m1: { monthSize: 16, distanceSize: 42, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 46, monthToDistGap: 10, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 30 }
     },
@@ -85,8 +85,8 @@ export const UI_CONFIG = {
     sten: {
       d1_l: { labelSize: 13, valueSize: 32, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 32, labelToValueGap: 6, stackGap: 20 },
-      d2_l: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 25 },
-      d2_c: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 25 },
+      d2_l: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 30 },
+      d2_c: { labelSize: 11, valueSize: 26, labelToValueGap: 6, colGap: 30 },
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 22, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 24, statsLvGap: 4, statsColGap: 30 }
     },
