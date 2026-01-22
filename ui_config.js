@@ -73,8 +73,8 @@ export const UI_CONFIG = {
     marker: {
       d1_l: { labelSize: 13, valueSize: 34, labelToValueGap: 8, stackGap: 20 },
       d1_c: { labelSize: 13, valueSize: 34, labelToValueGap: 6, stackGap: 20 },
-      d2_l: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 40 },
-      d2_c: { labelSize: 11, valueSize: 22, labelToValueGap: 6, colGap: 40 },
+      d2_l: { labelSize: 11, valueSize: 21, labelToValueGap: 6, colGap: 30 },
+      d2_c: { labelSize: 11, valueSize: 21, labelToValueGap: 6, colGap: 30 },
       m1: { monthSize: 16, distanceSize: 40, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 12, statsValueSize: 24, statsLvGap: -15, statsStackGap: 20 },
       m2: { monthSize: 18, distanceSize: 44, monthToDistGap: 6, distToStatsGap: 24, statsLabelSize: 12, statsValueSize: 26, statsLvGap: 4, statsColGap: 36 }
     },
@@ -109,8 +109,8 @@ export const UI_CONFIG = {
     flip: {
       d1_l: { labelSize: 14, valueSize: 42, labelToValueGap: 6, stackGap: 20 },
       d1_c: { labelSize: 14, valueSize: 42, labelToValueGap: 4, stackGap: 20 },
-      d2_l: { labelSize: 14, valueSize: 40, labelToValueGap: 6, colGap: 40 },
-      d2_c: { labelSize: 14, valueSize: 40, labelToValueGap: 4, colGap: 40 },
+      d2_l: { labelSize: 12, valueSize: 24, labelToValueGap: 6, colGap: 20 },
+      d2_c: { labelSize: 12, valueSize: 24, labelToValueGap: 6, colGap: 20 },
       // Monthly 설정은 존재하지만 index.html 로직에서 선택 불가 처리됨
       m1: { monthSize: 20, distanceSize: 48, monthToDistGap: 8, distToStatsGap: 20, statsLabelSize: 16, statsValueSize: 26, statsLvGap: -10, statsStackGap: 20 },
       m2: { monthSize: 20, distanceSize: 48, monthToDistGap: 6, distToStatsGap: 20, statsLabelSize: 16, statsValueSize: 32, statsLvGap: 4, statsColGap: 40 }
