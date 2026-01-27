@@ -17,9 +17,7 @@
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#ffffff" />
   <style>
-    /* =========================================
-       [CSS] 기존 스타일 (삭제 없음)
-       ========================================= */
+    /* ... (기존 스타일 유지) ... */
     :root {
       --ui-label-size: 12px;
       --ui-value-size: 34px;
@@ -78,38 +76,13 @@
     .run-btn { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 5000 !important; cursor: pointer !important; background: #ff9000 !important; color: #000 !important; width: min(360px, calc(100% - 40px)) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .run-btn:active { transform: translateX(-50%) scale(0.98) !important; }
     
-    /* =============================================================
-       [핵심 수정] 모든 팝업(Overlay)은 기본적으로 숨김 처리 (display: none)
-       이 코드가 없으면 투명한 막이 화면을 가려서 버튼이 안 눌립니다.
-       ============================================================= */
-    .screen-overlay, .modal-overlay, 
-    #garminLoginScreen, #stravaLoginScreen, 
-    #garminSelectScreen, #monthPickerScreen, 
-    #resultScreen, #colorPickerOverlay {
-        display: none;
-        position: fixed !important; 
-        top: 0; left: 0; bottom: 0; right: 0; 
-        width: 100%; height: 100%; 
-        background-color: #fff; 
-        z-index: 99999 !important; 
-        flex-direction: column;
-    }
-    
-    /* .show 클래스가 붙었을 때만 보이도록 설정 */
-    .screen-overlay.show, .modal-overlay.show, 
-    #garminLoginScreen.show, #stravaLoginScreen.show,
-    #garminSelectScreen.show, #monthPickerScreen.show, 
-    #resultScreen.show, #colorPickerOverlay.show {
-        display: flex !important;
-    }
-
-    #garminLoginScreen { background-color: var(--garmin, #76B6FF) !important; }
-    
+    #garminLoginScreen { display: none; position: fixed !important; top: 0; left: 0; bottom: 0; right: 0; width: 100%; height: 100%; background-color: var(--garmin, #76B6FF) !important; z-index: 99999 !important; pointer-events: auto !important; flex-direction: column; overflow-y: auto; padding-bottom: 120px !important; }
+    #garminLoginScreen.show { display: flex !important; }
     .gc-input::placeholder { color: #000 !important; opacity: 1 !important; }
     .gc-input { color: #000 !important; border-bottom: 2px solid #000 !important; }
     .gc-cta { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: min(360px, calc(100% - 60px)) !important; z-index: 100000 !important; background: #000 !important; color: #fff !important; cursor: pointer !important; margin: 0 !important; }
     .select-workout { background-color: #fff !important; z-index: 99999 !important; }
-    .result-screen { z-index: 2147483647 !important; }
+    .result-screen { z-index: 2147483647 !important; position: fixed !important; top: 0; left: 0; width: 100%; height: 100%; background: #fff; }
     .result-wrap { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 26px; box-sizing: border-box; }
     .result-block { width: 100%; }
     .data-empty { min-height: 20px; }
@@ -143,15 +116,15 @@
     .black-btn { width: 100%; height: 52px; background: #000; color: #fff; border: none; border-radius: 999px; font-size: 16px; font-weight: 800; margin-top: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
     .black-btn:active { transform: scale(0.98); }
 
-    /* [추가] 프리뷰 하단 Action 버튼 스타일 (회색 알약) */
+    /* [추가] Action Buttons Style */
     .preview-actions { 
         display: flex; 
         gap: 12px; 
         margin-top: 30px; 
         width: 100%; 
         justify-content: center; 
+        z-index: 50;
         position: relative;
-        z-index: 50; /* 클릭 가능하도록 z-index 상향 */
     }
     .action-btn-pill { 
         flex: 1; 
@@ -692,7 +665,6 @@
     // [LOGIC] WORKOUT LIST RENDER
     // ===========================================
     function renderWorkoutList(kind = 'garmin') {
-      // Use direct DOM access to be safe
       const listContainer = document.getElementById('workoutList');
       if (!listContainer) return;
       listContainer.innerHTML = ''; 
@@ -746,7 +718,7 @@
     }
 
     // ===============================================
-    // [IMAGE DOWNLOAD & COPY LOGIC] - TARGETING PREVIEW
+    // [IMAGE DOWNLOAD & COPY LOGIC] - PREVIEW TARGETING
     // ===============================================
     async function captureResult() {
         const isDaily = state.recordType === 'daily';
