@@ -17,7 +17,9 @@
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#ffffff" />
   <style>
-    /* ... (기존 스타일 유지) ... */
+    /* =========================================
+       [CSS] 원본 스타일 100% 유지
+       ========================================= */
     :root {
       --ui-label-size: 12px;
       --ui-value-size: 34px;
@@ -100,7 +102,7 @@
     #garminSelectScreen .select-list {
         flex: 1;
         overflow-y: auto;
-        padding-bottom: 200px; 
+        padding-bottom: 150px; 
         width: 100%;
         -webkit-overflow-scrolling: touch; 
     }
@@ -151,9 +153,9 @@
     .black-btn { width: 100%; height: 52px; background: #000; color: #fff; border: none; border-radius: 999px; font-size: 16px; font-weight: 800; margin-top: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
     .black-btn:active { transform: scale(0.98); }
 
-    /* Action Buttons Style - 초기에는 안보이게 설정 */
+    /* [추가] Action Buttons Style (초기엔 숨김) */
     .preview-actions { 
-        display: none; /* [수정] 초기 상태 숨김 */
+        display: none; /* 데이터 로드 전에는 안 보임 */
         gap: 12px; 
         margin-top: 30px; 
         width: 100%; 
@@ -443,7 +445,7 @@
         </div>
       </div>
       
-      <div class="preview-actions" id="actionBtnGroup">
+      <div class="preview-actions" id="actionBtnGroup" style="display:none;">
           <button class="action-btn-pill" id="btnSaveImage">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -705,7 +707,7 @@
       btnSaveImage: $('#btnSaveImage'), btnCopyImage: $('#btnCopyImage'), actionBtnGroup: $('#actionBtnGroup')
     };
 
-    // --- Screen Control ---
+    // --- Screen Control (Modified to toggle show class) ---
     function openScreen(id) {
       const node = document.getElementById(id);
       if(node) { 
@@ -839,16 +841,18 @@
              }
          }
       }
-
-      // [수정됨] 버튼 가시성 제어: 유효한 데이터가 있을 때만 버튼 표시
+      
+      // [수정] 1. 데이터가 있는지 확인
       const hasData = (d.km > 0 || (d.runs && d.runs > 0));
+      
+      // [수정] 2. 버튼 표시 여부 결정
       if(el.actionBtnGroup) {
           el.actionBtnGroup.style.display = hasData ? 'flex' : 'none';
       }
 
       applyPreviewStyles();
       
-      // [수정됨] UI 업데이트 후 핏 맞추고 -> 디바운스된 프리-렌더링 호출
+      // [수정] 3. UI 업데이트 후 -> 핏 맞추고 -> 데이터가 있다면 프리-렌더링 예약
       requestAnimationFrame(() => {
           applyFitPreview();
           if(hasData) triggerPreRender();
@@ -1322,82 +1326,179 @@
         });
     }
 
-    // [New] Open/Close logic modified to manage display style explicitly
-    function openScreen(id) { 
-        const node = document.getElementById(id); 
-        if(node) { 
-            node.classList.add('show'); 
-            node.setAttribute('aria-hidden', 'false'); 
-            if(el.btnRun) el.btnRun.style.display = 'none'; 
-        } 
-    }
-    function closeScreen(id) { 
-        const node = document.getElementById(id); 
-        if(node) { 
-            node.classList.remove('show'); 
-            node.setAttribute('aria-hidden', 'true'); 
-            if(el.btnRun) el.btnRun.style.display = 'block'; 
-        } 
-    }
-    document.addEventListener('click', (e) => { 
-        const closeId = e.target?.dataset?.close; 
-        if (closeId) closeScreen(closeId); 
-    });
+    // -----------------------------------------------------------
+    // [STRAVA LOGIC - FIXED & INTEGRATED]
+    // -----------------------------------------------------------
+    
+    // [중요] Railway 서버 주소 (배포된 백엔드)
+    const RAILWAY_SERVER_URL = "https://runimate-production.up.railway.app"; 
 
+    // 1. 로그인 버튼 클릭 (인증 페이지 이동)
+    if(el.btnStravaLogin) {
+        el.btnStravaLogin.addEventListener('click', () => {
+            // [본인의 Strava Client ID 입력]
+            const client_id = '192399'; // <-- Client ID 확인 필수
+            
+            const redirect_uri = window.location.origin; // 현재 페이지로 복귀
+            const scope = 'activity:read_all';
+            const authUrl = `https://www.strava.com/oauth/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&approval_prompt=force&scope=${scope}`;
+            
+            window.location.href = authUrl;
+        });
+    }
+
+    // 2. 인증 코드(Code) 확인 및 데이터 요청
+    function checkStravaCode() {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code'); // 'code' 파라미터 확인
+
+        if (code) {
+            // 주소창 깔끔하게 정리 (code 파라미터 숨김)
+            window.history.replaceState({}, document.title, window.location.pathname);
+            fetchStravaData(code);
+        }
+    }
+    
+    async function fetchStravaData(code) {
+         if(el.btnStravaLogin) {
+             el.btnStravaLogin.innerHTML = '<span>Importing...</span>';
+             el.btnStravaLogin.style.opacity = "0.7";
+             el.btnStravaLogin.disabled = true;
+         }
+         
+         try {
+             // [수정] 백엔드 엔드포인트 (/api/strava) 및 Body 키값 ({ code }) 수정
+             const res = await fetch(`${RAILWAY_SERVER_URL}/api/strava`, {
+                 method: "POST",
+                 headers: { "Content-Type": "application/json" },
+                 body: JSON.stringify({ code: code }) 
+             });
+             
+             const json = await res.json();
+             
+             if(json.success) {
+                 realStravaWorkouts = json.data;
+                 
+                 if(realStravaWorkouts.length > 0) {
+                      state.strava = realStravaWorkouts[0];
+                      state.dataType = 'strava';
+                      
+                      // 1. 연결 버튼 숨김 (중요: !important로 강제 숨김)
+                      if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.setAttribute('style', 'display: none !important');
+                      
+                      // 2. 카드 보여줌
+                      const stravaCardWrap = document.getElementById('stravaCardWrap');
+                      if(stravaCardWrap) stravaCardWrap.style.display = 'flex';
+                      
+                      // 3. 로그인 화면 닫기 & [핵심] 워크아웃 선택 화면 열기
+                      closeScreen('stravaLoginScreen');
+                      renderWorkoutList('strava');
+                      openScreen('garminSelectScreen'); // <-- 여기가 실행되어야 "Select Workout"이 뜹니다.
+                      
+                      applyDataType();
+                      updatePreview();
+                 } else {
+                     alert("최근 러닝 기록이 없습니다.");
+                     resetStravaBtn();
+                 }
+             } else {
+                 throw new Error(json.message || "Server Error");
+             }
+         } catch(err) {
+             console.error(err);
+             alert("데이터 불러오기 실패: " + err.message);
+             resetStravaBtn();
+         }
+    }
+
+    function resetStravaBtn() {
+        if(el.btnStravaLogin) {
+             el.btnStravaLogin.innerHTML = `<span>Connect with</span><img src="./img/strava_wht.png" alt="Strava" style="height: 14px; width: auto; margin-top: -1px; display: block;">`;
+             el.btnStravaLogin.style.opacity = "1";
+             el.btnStravaLogin.disabled = false;
+        }
+    }
+    
+    // 페이지 로드 시 코드 체크 실행
+    checkStravaCode();
+    
+    // [추가] 스트라바 리스트 버튼(햄버거) 클릭 이벤트
+    if(el.btnStravaList) {
+        el.btnStravaList.addEventListener('click', (e) => {
+             e.stopPropagation(); 
+             renderWorkoutList('strava'); 
+             openScreen('garminSelectScreen'); 
+        });
+    }
+
+    // --- RUN BUTTON: Result ---
     function buildResultDOM() {
-       const resWrap = document.getElementById('resultWrap');
-       const resBlock = document.getElementById('resultBlock');
-       if(resWrap) {
-           resWrap.className = `result-wrap ${state.layout}`;
-           if (state.recordType === 'daily') resWrap.classList.add(`align-${state.align}`);
-           else resWrap.classList.add('monthly'); 
+       el.resultWrap.className = `result-wrap ${state.layout}`;
+       // Add Align class
+       if (state.recordType === 'daily') {
+           el.resultWrap.classList.add(`align-${state.align}`);
+       } else {
+           el.resultWrap.classList.add('monthly'); 
        }
        
        let d = (state.recordType === 'daily') ? 
            ((state.dataType==='garmin' && state.garmin) || (state.dataType==='strava' && state.strava) || (state.dataType==='nrc' && state.daily) || state.manual) 
            : state.monthly;
 
-       if (resBlock) {
-           if (state.recordType === 'daily') {
-            resBlock.innerHTML = `
-              <div class="result-item"><span class="result-label">DISTANCE</span><span class="result-value"><span id="rvDistance"></span></span></div>
+       if (state.recordType === 'daily') {
+        el.resultBlock.innerHTML = `
+          <div class="result-item">
+            <span class="result-label">DISTANCE</span>
+            <span class="result-value"><span id="rvDistance"></span></span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">PACE</span>
+            <span class="result-value"><span id="rvPace"></span></span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">TIME</span>
+            <span class="result-value"><span id="rvTime"></span></span>
+          </div>
+        `;
+        if(state.fontColor !== 'auto') el.resultBlock.style.color = state.fontColor;
+        else el.resultBlock.style.color = '';
+        return { km: +(d.km || 0), paceSec: +(d.paceSec || 0), timeSec: +(d.timeSec || 0) };
+      } else {
+        const monthLine = `${monthName(d.month)} ${d.year}`;
+        if (state.layout === 'type1') {
+          el.resultBlock.innerHTML = `
+            <div class="m1-month">${monthLine}</div>
+            <div class="m1-distance"><span class="m1-distance-value"><span id="rvDistance"></span></span></div>
+            <div class="m1-stack">
+              <div class="m1-item"><div class="m-label result-label">RUNS</div><div class="m-value result-value"><span id="rvRuns"></span></div></div>
+              <div class="m1-item"><div class="m-label result-label">PACE</div><div class="m-value result-value"><span id="rvPace"></span></div></div>
+              <div class="m1-item"><div class="m-label result-label">TIME</div><div class="m-value result-value"><span id="rvTime"></span></div></div>
+            </div>
+          `;
+        } else {
+          el.resultBlock.innerHTML = `
+            <div class="m2-month">${monthLine}</div>
+            <div class="m2-distance"><span class="m2-distance-value"><span id="rvDistance"></span></span></div>
+            <div class="m2-row">
+              <div class="result-item"><span class="result-label">RUNS</span><span class="result-value"><span id="rvRuns"></span></span></div>
               <div class="result-item"><span class="result-label">PACE</span><span class="result-value"><span id="rvPace"></span></span></div>
               <div class="result-item"><span class="result-label">TIME</span><span class="result-value"><span id="rvTime"></span></span></div>
-            `;
-            resBlock.style.color = (state.fontColor !== 'auto') ? state.fontColor : '';
-            return { km: +(d.km || 0), paceSec: +(d.paceSec || 0), timeSec: +(d.timeSec || 0) };
-          } else {
-            const monthLine = `${monthName(d.month)} ${d.year}`;
-            if (state.layout === 'type1') {
-              resBlock.innerHTML = `
-                <div class="m1-month">${monthLine}</div>
-                <div class="m1-distance"><span class="m1-distance-value"><span id="rvDistance"></span></span></div>
-                <div class="m1-stack">
-                  <div class="m1-item"><div class="m-label result-label">RUNS</div><div class="m-value result-value"><span id="rvRuns"></span></div></div>
-                  <div class="m1-item"><div class="m-label result-label">PACE</div><div class="m-value result-value"><span id="rvPace"></span></div></div>
-                  <div class="m1-item"><div class="m-label result-label">TIME</div><div class="m-value result-value"><span id="rvTime"></span></div></div>
-                </div>
-              `;
-            } else {
-              resBlock.innerHTML = `
-                <div class="m2-month">${monthLine}</div>
-                <div class="m2-distance"><span class="m2-distance-value"><span id="rvDistance"></span></span></div>
-                <div class="m2-row">
-                  <div class="result-item"><span class="result-label">RUNS</span><span class="result-value"><span id="rvRuns"></span></span></div>
-                  <div class="result-item"><span class="result-label">PACE</span><span class="result-value"><span id="rvPace"></span></span></div>
-                  <div class="result-item"><span class="result-label">TIME</span><span class="result-value"><span id="rvTime"></span></span></div>
-                </div>
-              `;
-            }
-            resBlock.style.color = (state.fontColor !== 'auto') ? state.fontColor : '';
-            return { km: +(d.km || 0), runs: +(d.runs || 0), paceSec: +(d.paceSec || 0), timeSec: +(d.timeSec || 0) };
-          }
-       }
-       return { km:0, paceSec:0, timeSec:0 };
+            </div>
+          `;
+        }
+        if(state.fontColor !== 'auto') el.resultBlock.style.color = state.fontColor;
+        else el.resultBlock.style.color = '';
+        return { km: +(d.km || 0), runs: +(d.runs || 0), paceSec: +(d.paceSec || 0), timeSec: +(d.timeSec || 0) };
+      }
     }
     
+    // Result 너비 동기화 (프리뷰 기준)
     function lockFitResultTransforms(target, state) {
-      const rvDistance = $('#rvDistance'); const rvPace = $('#rvPace'); const rvTime = $('#rvTime'); const rvRuns = $('#rvRuns');
+      const rvDistance = $('#rvDistance');
+      const rvPace = $('#rvPace');
+      const rvTime = $('#rvTime');
+      const rvRuns = $('#rvRuns');
+
       const syncWidth = (rvEl, pvId) => {
           if (!rvEl) return;
           const pvEl = document.getElementById(pvId);
@@ -1463,18 +1564,19 @@
       requestAnimationFrame(frame);
     }
     
-    if(el.btnRun) {
-        el.btnRun.addEventListener('click', () => {
-           const targetData = buildResultDOM();
-           openScreen('resultScreen');
-           const resScreen = document.getElementById('resultScreen');
-           if(resScreen) {
-               resScreen.className = `screen-overlay result-screen font-${state.font} bg-${state.bg} show ${state.layout}`;
-               if(state.recordType==='daily') resScreen.classList.add(`align-${state.align}`);
-           }
-           requestAnimationFrame(() => { requestAnimationFrame(() => { animateAll(targetData); }); });
-        });
-    }
+    el.btnRun.addEventListener('click', () => {
+       const targetData = buildResultDOM();
+       openScreen('resultScreen');
+       el.resultScreen.className = `screen-overlay result-screen font-${state.font} bg-${state.bg} show ${state.layout}`;
+       // Add Align class to result screen for safety
+       if(state.recordType==='daily') el.resultScreen.classList.add(`align-${state.align}`);
+       
+       requestAnimationFrame(() => {
+           requestAnimationFrame(() => {
+               animateAll(targetData);
+           });
+       });
+    });
 
     // ===============================================
     // [IMAGE DOWNLOAD & COPY LOGIC] - FINAL
