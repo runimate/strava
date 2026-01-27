@@ -85,8 +85,6 @@
         background-color: #fff; 
         z-index: 99999 !important; 
         flex-direction: column; 
-        overflow-y: auto; 
-        padding-bottom: 120px !important; 
     }
     
     /* Select Workout 화면 레이아웃 (잘림 방지) */
@@ -100,7 +98,7 @@
     #garminSelectScreen .select-list {
         flex: 1;
         overflow-y: auto;
-        padding-bottom: 150px; 
+        padding-bottom: 200px; /* [중요] 하단 여백 추가 */
         width: 100%;
         -webkit-overflow-scrolling: touch; 
     }
@@ -745,8 +743,45 @@
       else if (state.dataType === 'manual') el.contentManual.style.display = 'block';
     }
 
+    // [New: Pre-rendering logic]
+    let readyBlob = null;
+    
+    // Background render function
+    async function generateBlobBackground() {
+        const isDaily = state.recordType === 'daily';
+        const targetId = isDaily ? 'previewDaily' : 'previewMonthly';
+        const previewEl = document.getElementById(targetId);
+        const element = previewEl ? previewEl.querySelector('.preview-content') : null;
+        
+        if(!element) return;
+        
+        try {
+            await document.fonts.ready;
+            const canvas = await html2canvas(element, {
+                backgroundColor: null,
+                scale: 3,
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+                onclone: (clonedDoc) => {
+                    const clonedEl = clonedDoc.querySelector(`#${targetId} .preview-content`);
+                    if (clonedEl) {
+                        clonedEl.style.background = 'transparent';
+                    }
+                }
+            });
+            
+            canvas.toBlob((blob) => {
+                readyBlob = blob; // Store blob in global variable
+            }, 'image/png');
+            
+        } catch(e) {
+            console.log("Pre-render error", e);
+        }
+    }
+
     function updatePreview() {
-      // (기존 업데이트 로직 유지)
+      // (기존 업데이트 로직)
       let d = { km: 0, paceSec: 0, timeSec: 0 };
       if (state.dataType === 'garmin' && state.garmin) d = state.garmin;
       else if (state.dataType === 'strava' && state.strava) d = state.strava;
@@ -794,7 +829,13 @@
       }
 
       applyPreviewStyles();
-      requestAnimationFrame(applyFitPreview);
+      
+      // [핵심] UI 업데이트 후 -> 핏 맞추고 -> 백그라운드 렌더링 호출
+      requestAnimationFrame(() => {
+          applyFitPreview();
+          // 약간의 지연 후 렌더링 (UI 블로킹 방지)
+          setTimeout(generateBlobBackground, 500); 
+      });
     }
     
     function applyPreviewStyles() {
@@ -1598,8 +1639,8 @@
                     try {
                         const file = new File([blob], "runimate.png", { type: "image/png" });
                         
-                        // 크롬 등 일부 브라우저에서 canShare 체크가 불안정하므로 바로 share 실행
-                        // files 배열만 전송 (텍스트 제외) -> 인스타 스토리 스티커 호환성 확보
+                        // [핵심] canShare 체크 없이 바로 share 실행 (크롬 호환성)
+                        // files 배열만 전송하여 텍스트만 복사되는 문제 해결
                         await navigator.share({
                             files: [file]
                         });
