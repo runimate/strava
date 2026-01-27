@@ -76,32 +76,29 @@
     .run-btn { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 5000 !important; cursor: pointer !important; background: #ff9000 !important; color: #000 !important; width: min(360px, calc(100% - 40px)) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .run-btn:active { transform: translateX(-50%) scale(0.98) !important; }
     
-    /* [수정됨] 이 부분이 핵심입니다! display: none이 없으면 화면을 가려서 버튼이 안 눌립니다. */
-    #garminLoginScreen, #stravaLoginScreen, #garminSelectScreen, #monthPickerScreen, #resultScreen, #colorPickerOverlay { 
-        display: none; /* 평소에는 숨김 */
+    /* [수정] 팝업창들이 평소에는 화면을 가리지 않도록 display: none 설정 */
+    .screen-overlay, .modal-overlay, #garminLoginScreen, #stravaLoginScreen, #garminSelectScreen, #monthPickerScreen, #resultScreen, #colorPickerOverlay { 
+        display: none; 
         position: fixed !important; 
         top: 0; left: 0; bottom: 0; right: 0; 
         width: 100%; height: 100%; 
         background-color: #fff; 
         z-index: 99999 !important; 
         flex-direction: column; 
-        overflow-y: auto; 
-        padding-bottom: 120px !important; 
     }
     
-    /* .show 클래스가 붙어야만 보이도록 설정 */
-    #garminLoginScreen.show, #stravaLoginScreen.show, #garminSelectScreen.show, #monthPickerScreen.show, #resultScreen.show, #colorPickerOverlay.show { 
+    .screen-overlay.show, .modal-overlay.show, #garminLoginScreen.show, #stravaLoginScreen.show, #garminSelectScreen.show, #monthPickerScreen.show, #resultScreen.show, #colorPickerOverlay.show { 
         display: flex !important; 
     }
-    
+
     #garminLoginScreen { background-color: var(--garmin, #76B6FF) !important; }
     .gc-input::placeholder { color: #000 !important; opacity: 1 !important; }
     .gc-input { color: #000 !important; border-bottom: 2px solid #000 !important; }
     .gc-cta { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: min(360px, calc(100% - 60px)) !important; z-index: 100000 !important; background: #000 !important; color: #fff !important; cursor: pointer !important; margin: 0 !important; }
     .select-workout { background-color: #fff !important; z-index: 99999 !important; }
     
-    /* result-screen도 초기에는 안 보여야 합니다. */
-    .result-screen { z-index: 2147483647 !important; position: fixed !important; top: 0; left: 0; width: 100%; height: 100%; background: #fff; }
+    .result-screen { z-index: 2147483647 !important; } /* Result screen z-index */
+    
     .result-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 26px; box-sizing: border-box; }
     .result-block { width: 100%; }
     .data-empty { min-height: 20px; }
@@ -136,32 +133,8 @@
     .black-btn:active { transform: scale(0.98); }
 
     /* [추가] Action Buttons Style */
-    .preview-actions { 
-        display: flex; 
-        gap: 12px; 
-        margin-top: 30px; 
-        width: 100%; 
-        justify-content: center; 
-        position: relative;
-        z-index: 50; /* 버튼이 눌리도록 z-index 확보 */
-    }
-    .action-btn-pill { 
-        flex: 1; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 8px; 
-        height: 52px; 
-        background: #F4F4F4; 
-        border: none; 
-        border-radius: 999px; 
-        font-size: 14px; 
-        font-weight: 800; 
-        cursor: pointer; 
-        color: #000; 
-        transition: background 0.2s, transform 0.1s;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
+    .preview-actions { display: flex; gap: 12px; margin-top: 30px; width: 100%; justify-content: center; position: relative; z-index: 50; }
+    .action-btn-pill { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; background: #F4F4F4; border: none; border-radius: 999px; font-size: 14px; font-weight: 800; cursor: pointer; color: #000; transition: background 0.2s, transform 0.1s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .action-btn-pill:active { background: #E0E0E0; transform: scale(0.98); }
     .action-btn-pill svg { width: 20px; height: 20px; stroke-width: 2.5px; }
   </style>
@@ -550,62 +523,11 @@
     const pad2 = (n) => String(n).padStart(2, '0');
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-    // [포맷팅 함수] ... (기존 유지)
-    function fmtKmPreview(km) { return `${Number(km || 0).toFixed(2)}Km`; }
-    function fmtRunsPreview(r) { return pad2(Number(r || 0)); }
-    function fmtPacePreview(sec) {
-      const s = Math.max(0, Math.floor(sec || 0));
-      const m = Math.floor(s / 60);
-      const r = s % 60;
-      return `${m}'${pad2(r)}"`; 
-    }
-    function fmtTimePreview(sec) {
-      const s = Math.max(0, Math.floor(sec || 0));
-      const h = Math.floor(s / 3600);
-      const m = Math.floor((s % 3600) / 60);
-      const r = s % 60;
-      if (h > 0) return `${h}:${pad2(m)}:${pad2(r)}`;
-      else return `${pad2(m)}:${pad2(r)}`;
-    }
-    function fmtPaceResult(sec) { return fmtPacePreview(sec); }
-    function fmtTimeResult(sec) { return fmtTimePreview(sec); }
-    
-    function monthName(m) { const names = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']; return names[clamp(m, 1, 12) - 1]; }
-    function monthNameCap(m) { const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; return names[clamp(m, 1, 12) - 1]; }
+    // [중요] Railway 서버 주소
+    const RAILWAY_SERVER_URL = "https://runimate-production.up.railway.app"; 
 
-    // --- FIT HELPERS ---
-    function fitOne(span, minScale = 0.35) {
-      if (!span) return;
-      span.style.transform = ''; span.style.transformOrigin = 'left bottom';
-      const w = span.parentElement?.clientWidth; const sw = span.scrollWidth;
-      if (!w || !sw) return;
-      if (sw > w) {
-          const s = Math.max(minScale, w / sw);
-          span.style.transform = `scale(${s})`;
-      }
-    }
-    
-    function computeScaleForGroup(spans, minScale = 0.35) {
-      const arr = (spans || []).filter(Boolean); if (!arr.length) return 1;
-      let need = 1;
-      arr.forEach(sp => {
-        sp.style.transform = ''; sp.style.transformOrigin = 'left bottom';
-        const w = sp.parentElement?.clientWidth; const sw = span.scrollWidth;
-        if (w && sw > w) need = Math.min(need, w / sw);
-      });
-      return Math.max(minScale, Math.min(1, need));
-    }
-    
-    function applyLockedScale(spans, scale) {
-      (spans || []).filter(Boolean).forEach(sp => {
-        sp.style.transformOrigin = 'left bottom';
-        sp.style.transform = (scale < 1) ? `scale(${scale})` : '';
-      });
-    }
-    
     // --- STATE ---
     const today = new Date(); 
-
     const state = {
       recordType: 'daily',
       dataType: null,      
@@ -689,7 +611,7 @@
       btnSaveImage: $('#btnSaveImage'), btnCopyImage: $('#btnCopyImage'), actionBtnGroup: $('#actionBtnGroup')
     };
 
-    // --- Screen Control (Modified to toggle show class) ---
+    // --- Screen Control ---
     function openScreen(id) {
       const node = document.getElementById(id);
       if(node) { 
@@ -1575,14 +1497,35 @@
                     alert('이미지 생성 실패');
                     return;
                 }
+                
+                // 1. 모바일 공유하기 (Web Share API) 우선 시도
+                // 모바일 브라우저 보안 정책상 클립보드 직접 복사가 차단되는 경우가 많음
+                // 공유하기 창에서 '복사'를 누르면 해결됨
+                if (navigator.canShare && navigator.share) {
+                    try {
+                        const file = new File([blob], "runimate.png", { type: "image/png" });
+                        if (navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                files: [file],
+                                title: 'Runimate',
+                                text: 'My Running Record'
+                            });
+                            return; // 공유 성공 시 종료
+                        }
+                    } catch (shareErr) {
+                        // 사용자가 공유 취소했거나 에러 발생 시 아래 복사 로직 시도
+                        console.log('Share API skipped/failed', shareErr);
+                    }
+                }
+
+                // 2. PC 클립보드 직접 복사 시도
                 try {
-                    // 클립보드에 이미지 쓰기
                     const item = new ClipboardItem({ 'image/png': blob });
                     await navigator.clipboard.write([item]);
                     alert('복사되었습니다! 인스타그램 스토리에 붙여넣기 하세요.');
                 } catch (err) {
                     console.error('Copy failed:', err);
-                    alert('복사 실패: 브라우저가 지원하지 않거나 보안 연결이 아닙니다. (Save Image 버튼을 사용해주세요)');
+                    alert('복사 실패: 모바일 보안 정책으로 인해 직접 복사가 제한되었습니다. [Save Image] 버튼을 이용해주세요.');
                 }
             });
         });
