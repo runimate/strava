@@ -76,31 +76,29 @@
     .run-btn { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 5000 !important; cursor: pointer !important; background: #ff9000 !important; color: #000 !important; width: min(360px, calc(100% - 40px)) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .run-btn:active { transform: translateX(-50%) scale(0.98) !important; }
     
-    /* [수정] 팝업창 CSS: 화면 가림 방지 및 모바일 높이 대응 */
+    /* 팝업창(Overlay) 숨김 처리 및 스타일 */
     #garminLoginScreen, #stravaLoginScreen, #garminSelectScreen, #monthPickerScreen, #resultScreen, #colorPickerOverlay { 
-        display: none; 
+        display: none; /* 평소에는 숨김 */
         position: fixed !important; 
         top: 0; left: 0; bottom: 0; right: 0; 
-        width: 100%; 
-        height: 100%;       /* Fallback */
-        height: 100dvh;     /* [수정] 모바일 주소창 대응 */
+        width: 100%; height: 100%; 
         background-color: #fff; 
         z-index: 99999 !important; 
         flex-direction: column; 
-        overflow-y: auto; 
     }
     
-    /* [수정] Select Workout 하단 여백 증대 (잘림 방지) */
+    /* Select Workout 화면 레이아웃 (잘림 방지) */
     #garminSelectScreen .select-wrap {
         display: flex;
         flex-direction: column;
         height: 100%;
         overflow: hidden; 
     }
+    
     #garminSelectScreen .select-list {
         flex: 1;
         overflow-y: auto;
-        padding-bottom: 200px !important; /* [핵심] 하단바에 가려지지 않도록 충분한 여백 */
+        padding-bottom: 150px; 
         width: 100%;
         -webkit-overflow-scrolling: touch; 
     }
@@ -116,7 +114,8 @@
     .gc-cta { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: min(360px, calc(100% - 60px)) !important; z-index: 100000 !important; background: #000 !important; color: #fff !important; cursor: pointer !important; margin: 0 !important; }
     .select-workout { background-color: #fff !important; z-index: 99999 !important; }
     
-    .result-screen { z-index: 2147483647 !important; }
+    /* result-screen도 초기에는 안 보여야 합니다. */
+    .result-screen { z-index: 2147483647 !important; position: fixed !important; top: 0; left: 0; width: 100%; height: 100%; background: #fff; }
     .result-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 26px; box-sizing: border-box; }
     .result-block { width: 100%; }
     .data-empty { min-height: 20px; }
@@ -704,7 +703,7 @@
       btnSaveImage: $('#btnSaveImage'), btnCopyImage: $('#btnCopyImage'), actionBtnGroup: $('#actionBtnGroup')
     };
 
-    // --- Screen Control (Modified to toggle show class) ---
+    // --- Screen Control ---
     function openScreen(id) {
       const node = document.getElementById(id);
       if(node) { 
