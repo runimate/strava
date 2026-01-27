@@ -703,7 +703,7 @@
       btnSaveImage: $('#btnSaveImage'), btnCopyImage: $('#btnCopyImage'), actionBtnGroup: $('#actionBtnGroup')
     };
 
-    // --- Screen Control (Modified to toggle show class) ---
+    // --- Screen Control ---
     function openScreen(id) {
       const node = document.getElementById(id);
       if(node) { 
@@ -1584,39 +1584,33 @@
             const canvas = await captureResult();
             if (!canvas) return;
 
+            // [수정됨] PC 클립보드 복사 로직 완전 제거
+            // 무조건 모바일 네이티브 공유 시트(Share Sheet)만 실행
             canvas.toBlob(async (blob) => {
                 if (!blob) {
                     alert('이미지 생성 실패');
                     return;
                 }
                 
-                // [수정됨] 크롬/사파리 공통: 공유하기(Share API) 우선 실행
-                // files 배열만 전송하여 텍스트만 복사되는 문제 해결
                 if (navigator.share) {
                     try {
                         const file = new File([blob], "runimate.png", { type: "image/png" });
                         
-                        // 크롬의 canShare 버그를 우회하기 위해 canShare 체크 제거하고 바로 시도
+                        // [핵심] canShare 체크 없이 바로 share 실행 (크롬 호환성)
+                        // files 배열만 전송하여 텍스트만 복사되는 문제 해결
                         await navigator.share({
                             files: [file]
                         });
-                        return; // 성공 시 종료
+                        
                     } catch (shareErr) {
                         // 사용자가 취소했거나 에러가 났을 때
-                        console.log('Share canceled/failed', shareErr);
-                        // 여기서 return하여 불필요한 클립보드 접근 시도 차단 (크롬 에러 방지)
-                        return; 
+                        if(shareErr.name !== 'AbortError') {
+                             console.log('Share failed', shareErr);
+                             alert("공유 실패: " + shareErr.message);
+                        }
                     }
-                }
-
-                // PC 등 Share API가 아예 없을 때만 최후의 수단으로 클립보드 시도
-                try {
-                    const item = new ClipboardItem({ 'image/png': blob });
-                    await navigator.clipboard.write([item]);
-                    alert('복사되었습니다! (PC)');
-                } catch (err) {
-                    console.error('Copy failed:', err);
-                    alert('이 브라우저에서는 공유하기를 지원하지 않습니다. [Save Image]를 이용해주세요.');
+                } else {
+                    alert('이 브라우저는 공유하기 기능을 지원하지 않습니다. [Save Image]를 이용해주세요.');
                 }
             });
         });
