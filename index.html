@@ -76,7 +76,7 @@
     .run-btn { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 5000 !important; cursor: pointer !important; background: #ff9000 !important; color: #000 !important; width: min(360px, calc(100% - 40px)) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .run-btn:active { transform: translateX(-50%) scale(0.98) !important; }
     
-    /* [수정됨] 팝업창(Overlay) 숨김 처리 및 스타일 */
+    /* 팝업창(Overlay) 숨김 처리 및 스타일 */
     #garminLoginScreen, #stravaLoginScreen, #garminSelectScreen, #monthPickerScreen, #resultScreen, #colorPickerOverlay { 
         display: none; /* 평소에는 숨김 */
         position: fixed !important; 
@@ -87,20 +87,20 @@
         flex-direction: column; 
     }
     
-    /* [수정됨] Select Workout 화면 레이아웃 (잘림 방지) */
+    /* Select Workout 화면 레이아웃 (잘림 방지) */
     #garminSelectScreen .select-wrap {
         display: flex;
         flex-direction: column;
         height: 100%;
-        overflow: hidden; /* 전체 스크롤 방지 */
+        overflow: hidden; 
     }
     
     #garminSelectScreen .select-list {
         flex: 1;
         overflow-y: auto;
-        padding-bottom: 150px; /* [중요] 하단 여백 대폭 추가하여 잘림 방지 */
+        padding-bottom: 150px; 
         width: 100%;
-        -webkit-overflow-scrolling: touch; /* 부드러운 스크롤 */
+        -webkit-overflow-scrolling: touch; 
     }
 
     /* .show 클래스가 붙어야만 보이도록 설정 */
@@ -149,7 +149,7 @@
     .black-btn { width: 100%; height: 52px; background: #000; color: #fff; border: none; border-radius: 999px; font-size: 16px; font-weight: 800; margin-top: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
     .black-btn:active { transform: scale(0.98); }
 
-    /* [추가] Action Buttons Style */
+    /* Action Buttons Style */
     .preview-actions { 
         display: flex; 
         gap: 12px; 
@@ -157,7 +157,7 @@
         width: 100%; 
         justify-content: center; 
         position: relative;
-        z-index: 50; /* 버튼이 눌리도록 z-index 확보 */
+        z-index: 50; 
     }
     .action-btn-pill { 
         flex: 1; 
@@ -1590,34 +1590,35 @@
                     return;
                 }
                 
-                // [수정됨] 모바일에서 공유하기 우선 실행 & 인스타그램 텍스트 오류 해결
-                if (navigator.canShare && navigator.share) {
+                const file = new File([blob], "runimate_record.png", { type: "image/png" });
+
+                // [핵심 수정] 모바일에서는 무조건 Share API 우선 호출
+                // title, text를 비워서 인스타그램에서 이미지로 인식하게 함
+                if (navigator.share) {
                     try {
-                        const file = new File([blob], "runimate.png", { type: "image/png" });
-                        
-                        // [핵심] files 배열만 보냅니다. (title, text 제거 -> 인스타 오류 해결)
-                        if (navigator.canShare({ files: [file] })) {
-                            await navigator.share({
-                                files: [file]
-                            });
-                            // 공유가 성공적으로 호출되면 여기서 종료 (클립보드로 넘어가지 않음)
-                            return; 
-                        }
+                        await navigator.share({
+                            files: [file] // files만 전송
+                        });
+                        return; // 성공 시 종료 (PC 클립보드 로직 실행 안 함)
                     } catch (shareErr) {
-                        // 사용자가 취소했거나 에러 발생 시 로그만 찍고 종료
-                        console.log('Share interaction cancelled or failed', shareErr);
-                        return; // [핵심] 여기서 return을 해버려서 아래 클립보드 로직으로 넘어가지 않게 함 (크롬 오류 해결)
+                        // 사용자가 취소했거나 에러가 났을 때
+                        console.log('Share canceled/failed', shareErr);
+                        
+                        // [중요] 모바일 크롬 에러 방지: 
+                        // 공유하기 창이 떴다가 닫힌 후에는 클립보드 접근 권한이 만료되어
+                        // 아래 write()를 호출하면 에러가 납니다. 그래서 여기서 멈춥니다.
+                        return; 
                     }
                 }
 
-                // PC 환경에서만 실행되는 클립보드 복사 로직
+                // PC 환경 등 Share API가 없을 때만 클립보드 복사 시도
                 try {
                     const item = new ClipboardItem({ 'image/png': blob });
                     await navigator.clipboard.write([item]);
-                    alert('복사되었습니다! 인스타그램 스토리에 붙여넣기 하세요.');
+                    alert('복사되었습니다! (PC)');
                 } catch (err) {
                     console.error('Copy failed:', err);
-                    alert('PC 복사 실패: 보안 정책으로 인해 제한되었습니다. [Save Image]를 이용해주세요.');
+                    alert('복사 실패: 이 브라우저에서는 [Save Image]를 이용해주세요.');
                 }
             });
         });
