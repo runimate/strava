@@ -1590,35 +1590,33 @@
                     return;
                 }
                 
-                const file = new File([blob], "runimate_record.png", { type: "image/png" });
-
-                // [핵심 수정] 모바일에서는 무조건 Share API 우선 호출
-                // title, text를 비워서 인스타그램에서 이미지로 인식하게 함
+                // [수정됨] 크롬/사파리 공통: 공유하기(Share API) 우선 실행
+                // files 배열만 전송하여 텍스트만 복사되는 문제 해결
                 if (navigator.share) {
                     try {
+                        const file = new File([blob], "runimate.png", { type: "image/png" });
+                        
+                        // 크롬의 canShare 버그를 우회하기 위해 canShare 체크 제거하고 바로 시도
                         await navigator.share({
-                            files: [file] // files만 전송
+                            files: [file]
                         });
-                        return; // 성공 시 종료 (PC 클립보드 로직 실행 안 함)
+                        return; // 성공 시 종료
                     } catch (shareErr) {
                         // 사용자가 취소했거나 에러가 났을 때
                         console.log('Share canceled/failed', shareErr);
-                        
-                        // [중요] 모바일 크롬 에러 방지: 
-                        // 공유하기 창이 떴다가 닫힌 후에는 클립보드 접근 권한이 만료되어
-                        // 아래 write()를 호출하면 에러가 납니다. 그래서 여기서 멈춥니다.
+                        // 여기서 return하여 불필요한 클립보드 접근 시도 차단 (크롬 에러 방지)
                         return; 
                     }
                 }
 
-                // PC 환경 등 Share API가 없을 때만 클립보드 복사 시도
+                // PC 등 Share API가 아예 없을 때만 최후의 수단으로 클립보드 시도
                 try {
                     const item = new ClipboardItem({ 'image/png': blob });
                     await navigator.clipboard.write([item]);
                     alert('복사되었습니다! (PC)');
                 } catch (err) {
                     console.error('Copy failed:', err);
-                    alert('복사 실패: 이 브라우저에서는 [Save Image]를 이용해주세요.');
+                    alert('이 브라우저에서는 공유하기를 지원하지 않습니다. [Save Image]를 이용해주세요.');
                 }
             });
         });
