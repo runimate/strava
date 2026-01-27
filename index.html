@@ -76,29 +76,31 @@
     .run-btn { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 5000 !important; cursor: pointer !important; background: #ff9000 !important; color: #000 !important; width: min(360px, calc(100% - 40px)) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .run-btn:active { transform: translateX(-50%) scale(0.98) !important; }
     
-    /* 팝업창(Overlay) 숨김 처리 및 스타일 */
+    /* [수정] 팝업창 CSS: 화면 가림 방지 및 모바일 높이 대응 */
     #garminLoginScreen, #stravaLoginScreen, #garminSelectScreen, #monthPickerScreen, #resultScreen, #colorPickerOverlay { 
-        display: none; /* 평소에는 숨김 */
+        display: none; 
         position: fixed !important; 
         top: 0; left: 0; bottom: 0; right: 0; 
-        width: 100%; height: 100%; 
+        width: 100%; 
+        height: 100%;       /* Fallback */
+        height: 100dvh;     /* [수정] 모바일 주소창 대응 */
         background-color: #fff; 
         z-index: 99999 !important; 
         flex-direction: column; 
+        overflow-y: auto; 
     }
     
-    /* Select Workout 화면 레이아웃 (잘림 방지) */
+    /* [수정] Select Workout 하단 여백 증대 (잘림 방지) */
     #garminSelectScreen .select-wrap {
         display: flex;
         flex-direction: column;
         height: 100%;
         overflow: hidden; 
     }
-    
     #garminSelectScreen .select-list {
         flex: 1;
         overflow-y: auto;
-        padding-bottom: 150px; 
+        padding-bottom: 200px !important; /* [핵심] 하단바에 가려지지 않도록 충분한 여백 */
         width: 100%;
         -webkit-overflow-scrolling: touch; 
     }
@@ -114,8 +116,7 @@
     .gc-cta { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: min(360px, calc(100% - 60px)) !important; z-index: 100000 !important; background: #000 !important; color: #fff !important; cursor: pointer !important; margin: 0 !important; }
     .select-workout { background-color: #fff !important; z-index: 99999 !important; }
     
-    /* result-screen도 초기에는 안 보여야 합니다. */
-    .result-screen { z-index: 2147483647 !important; position: fixed !important; top: 0; left: 0; width: 100%; height: 100%; background: #fff; }
+    .result-screen { z-index: 2147483647 !important; }
     .result-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 26px; box-sizing: border-box; }
     .result-block { width: 100%; }
     .data-empty { min-height: 20px; }
@@ -703,7 +704,7 @@
       btnSaveImage: $('#btnSaveImage'), btnCopyImage: $('#btnCopyImage'), actionBtnGroup: $('#actionBtnGroup')
     };
 
-    // --- Screen Control ---
+    // --- Screen Control (Modified to toggle show class) ---
     function openScreen(id) {
       const node = document.getElementById(id);
       if(node) { 
@@ -1586,33 +1587,34 @@
 
             // [수정됨] PC 클립보드 복사 로직 완전 제거
             // 무조건 모바일 네이티브 공유 시트(Share Sheet)만 실행
-            canvas.toBlob(async (blob) => {
-                if (!blob) {
-                    alert('이미지 생성 실패');
-                    return;
-                }
-                
-                if (navigator.share) {
-                    try {
-                        const file = new File([blob], "runimate.png", { type: "image/png" });
-                        
-                        // [핵심] canShare 체크 없이 바로 share 실행 (크롬 호환성)
-                        // files 배열만 전송하여 텍스트만 복사되는 문제 해결
-                        await navigator.share({
-                            files: [file]
-                        });
-                        
-                    } catch (shareErr) {
-                        // 사용자가 취소했거나 에러가 났을 때
-                        if(shareErr.name !== 'AbortError') {
-                             console.log('Share failed', shareErr);
-                             alert("공유 실패: " + shareErr.message);
-                        }
+            // toBlob를 Promise로 감싸서 실행 컨텍스트 유지
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            
+            if (!blob) {
+                alert('이미지 생성 실패');
+                return;
+            }
+            
+            if (navigator.share) {
+                try {
+                    const file = new File([blob], "runimate.png", { type: "image/png" });
+                    
+                    // [핵심] canShare 체크 없이 바로 share 실행 (크롬 호환성)
+                    // files 배열만 전송하여 텍스트만 복사되는 문제 해결
+                    await navigator.share({
+                        files: [file]
+                    });
+                    
+                } catch (shareErr) {
+                    // 사용자가 취소했거나 에러가 났을 때
+                    if(shareErr.name !== 'AbortError') {
+                         console.log('Share failed', shareErr);
+                         alert("공유 실패: " + shareErr.message);
                     }
-                } else {
-                    alert('이 브라우저는 공유하기 기능을 지원하지 않습니다. [Save Image]를 이용해주세요.');
                 }
-            });
+            } else {
+                alert('이 브라우저는 공유하기 기능을 지원하지 않습니다. [Save Image]를 이용해주세요.');
+            }
         });
     }
 
