@@ -85,6 +85,8 @@
         background-color: #fff; 
         z-index: 99999 !important; 
         flex-direction: column; 
+        overflow-y: auto; 
+        padding-bottom: 120px !important; 
     }
     
     /* Select Workout 화면 레이아웃 (잘림 방지) */
@@ -703,7 +705,7 @@
       btnSaveImage: $('#btnSaveImage'), btnCopyImage: $('#btnCopyImage'), actionBtnGroup: $('#actionBtnGroup')
     };
 
-    // --- Screen Control ---
+    // --- Screen Control (Modified to toggle show class) ---
     function openScreen(id) {
       const node = document.getElementById(id);
       if(node) { 
@@ -1578,42 +1580,42 @@
         });
     }
 
-    // 2. COPY (스마트 복사: 모바일 Share API 대응)
+    // 2. COPY (오직 모바일 공유 시트만 실행 - 크롬/사파리 호환성)
     if (btnCopyImage) {
         btnCopyImage.addEventListener('click', async () => {
             const canvas = await captureResult();
             if (!canvas) return;
 
-            // [수정됨] PC 클립보드 복사 로직 완전 제거
-            // 무조건 모바일 네이티브 공유 시트(Share Sheet)만 실행
-            // toBlob를 Promise로 감싸서 실행 컨텍스트 유지
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-            
-            if (!blob) {
-                alert('이미지 생성 실패');
-                return;
-            }
-            
-            if (navigator.share) {
-                try {
-                    const file = new File([blob], "runimate.png", { type: "image/png" });
-                    
-                    // [핵심] canShare 체크 없이 바로 share 실행 (크롬 호환성)
-                    // files 배열만 전송하여 텍스트만 복사되는 문제 해결
-                    await navigator.share({
-                        files: [file]
-                    });
-                    
-                } catch (shareErr) {
-                    // 사용자가 취소했거나 에러가 났을 때
-                    if(shareErr.name !== 'AbortError') {
-                         console.log('Share failed', shareErr);
-                         alert("공유 실패: " + shareErr.message);
-                    }
+            canvas.toBlob(async (blob) => {
+                if (!blob) {
+                    alert('이미지 생성 실패');
+                    return;
                 }
-            } else {
-                alert('이 브라우저는 공유하기 기능을 지원하지 않습니다. [Save Image]를 이용해주세요.');
-            }
+                
+                // [수정 완료] PC나 클립보드 복사 로직 완전히 배제
+                // 무조건 네이티브 공유 시트(Share Sheet)만 실행
+                if (navigator.share) {
+                    try {
+                        const file = new File([blob], "runimate.png", { type: "image/png" });
+                        
+                        // 크롬 등 일부 브라우저에서 canShare 체크가 불안정하므로 바로 share 실행
+                        // files 배열만 전송 (텍스트 제외) -> 인스타 스토리 스티커 호환성 확보
+                        await navigator.share({
+                            files: [file]
+                        });
+                        
+                    } catch (shareErr) {
+                        // 사용자가 취소했거나 에러가 났을 때
+                        if(shareErr.name !== 'AbortError') {
+                             console.log('Share failed', shareErr);
+                             alert("공유 실패: " + shareErr.message);
+                        }
+                    }
+                } else {
+                    // 공유 API가 없는 구형 브라우저나 PC 환경
+                    alert('이 브라우저는 공유하기 기능을 지원하지 않습니다. [Save Image]를 이용해주세요.');
+                }
+            });
         });
     }
 
