@@ -1578,7 +1578,7 @@
         });
     }
 
-    // 2. COPY (클립보드 복사)
+    // 2. COPY (스마트 복사: 모바일 Share API 대응)
     if (btnCopyImage) {
         btnCopyImage.addEventListener('click', async () => {
             const canvas = await captureResult();
@@ -1590,31 +1590,34 @@
                     return;
                 }
                 
-                // 1. 모바일 공유하기 (Web Share API) 우선 시도
+                // [수정됨] 모바일에서 공유하기 우선 실행 & 인스타그램 텍스트 오류 해결
                 if (navigator.canShare && navigator.share) {
                     try {
-                        const file = new File([blob], "runimate_record.png", { type: "image/png" });
+                        const file = new File([blob], "runimate.png", { type: "image/png" });
+                        
+                        // [핵심] files 배열만 보냅니다. (title, text 제거 -> 인스타 오류 해결)
                         if (navigator.canShare({ files: [file] })) {
                             await navigator.share({
-                                files: [file],
-                                // title, text 제거 (인스타 스토리 텍스트 이슈 해결)
+                                files: [file]
                             });
-                            return; // 공유 성공 시 종료
+                            // 공유가 성공적으로 호출되면 여기서 종료 (클립보드로 넘어가지 않음)
+                            return; 
                         }
                     } catch (shareErr) {
-                        // 공유 취소/실패 시 아래 복사 로직으로 fallback
-                        console.log('Share API skipped/failed', shareErr);
+                        // 사용자가 취소했거나 에러 발생 시 로그만 찍고 종료
+                        console.log('Share interaction cancelled or failed', shareErr);
+                        return; // [핵심] 여기서 return을 해버려서 아래 클립보드 로직으로 넘어가지 않게 함 (크롬 오류 해결)
                     }
                 }
 
-                // 2. PC 클립보드 직접 복사 시도
+                // PC 환경에서만 실행되는 클립보드 복사 로직
                 try {
                     const item = new ClipboardItem({ 'image/png': blob });
                     await navigator.clipboard.write([item]);
                     alert('복사되었습니다! 인스타그램 스토리에 붙여넣기 하세요.');
                 } catch (err) {
                     console.error('Copy failed:', err);
-                    alert('복사 실패: 모바일 보안 정책으로 인해 직접 복사가 제한되었습니다. [Save Image] 버튼을 이용해주세요.');
+                    alert('PC 복사 실패: 보안 정책으로 인해 제한되었습니다. [Save Image]를 이용해주세요.');
                 }
             });
         });
