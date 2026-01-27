@@ -76,7 +76,7 @@
     .run-btn { position: fixed !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 5000 !important; cursor: pointer !important; background: #ff9000 !important; color: #000 !important; width: min(360px, calc(100% - 40px)) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .run-btn:active { transform: translateX(-50%) scale(0.98) !important; }
     
-    /* [수정됨] 이 부분이 핵심입니다! display: none이 없으면 화면을 가려서 버튼이 안 눌립니다. */
+    /* [수정됨] 팝업창(Overlay) 숨김 처리 및 스타일 */
     #garminLoginScreen, #stravaLoginScreen, #garminSelectScreen, #monthPickerScreen, #resultScreen, #colorPickerOverlay { 
         display: none; /* 평소에는 숨김 */
         position: fixed !important; 
@@ -85,10 +85,24 @@
         background-color: #fff; 
         z-index: 99999 !important; 
         flex-direction: column; 
-        overflow-y: auto; 
-        padding-bottom: 120px !important; 
     }
     
+    /* [수정됨] Select Workout 화면 레이아웃 (잘림 방지) */
+    #garminSelectScreen .select-wrap {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden; /* 전체 스크롤 방지 */
+    }
+    
+    #garminSelectScreen .select-list {
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 150px; /* [중요] 하단 여백 대폭 추가하여 잘림 방지 */
+        width: 100%;
+        -webkit-overflow-scrolling: touch; /* 부드러운 스크롤 */
+    }
+
     /* .show 클래스가 붙어야만 보이도록 설정 */
     #garminLoginScreen.show, #stravaLoginScreen.show, #garminSelectScreen.show, #monthPickerScreen.show, #resultScreen.show, #colorPickerOverlay.show { 
         display: flex !important; 
@@ -546,6 +560,7 @@
     import { applyUIConfigToRoot } from './ui_config.js';
 
     const $ = (s) => document.querySelector(s);
+    const safelyGet = (id) => document.getElementById(id);
     const pad2 = (n) => String(n).padStart(2, '0');
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
@@ -688,7 +703,7 @@
       btnSaveImage: $('#btnSaveImage'), btnCopyImage: $('#btnCopyImage'), actionBtnGroup: $('#actionBtnGroup')
     };
 
-    // --- Screen Control ---
+    // --- Screen Control (Modified to toggle show class) ---
     function openScreen(id) {
       const node = document.getElementById(id);
       if(node) { 
@@ -1563,7 +1578,7 @@
         });
     }
 
-    // 2. COPY (클립보드 복사 + 모바일 공유)
+    // 2. COPY (클립보드 복사)
     if (btnCopyImage) {
         btnCopyImage.addEventListener('click', async () => {
             const canvas = await captureResult();
@@ -1579,12 +1594,10 @@
                 if (navigator.canShare && navigator.share) {
                     try {
                         const file = new File([blob], "runimate_record.png", { type: "image/png" });
-                         // canShare로 파일 공유 가능 여부 확인
                         if (navigator.canShare({ files: [file] })) {
                             await navigator.share({
                                 files: [file],
-                                title: 'Runimate',
-                                text: 'My Running Record'
+                                // title, text 제거 (인스타 스토리 텍스트 이슈 해결)
                             });
                             return; // 공유 성공 시 종료
                         }
