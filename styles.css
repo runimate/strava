@@ -14,7 +14,7 @@
   --nrc: #5CE45C;
   --manual: #9B7CFF;
 
-  /* UI CONFIG VARIABLES */
+  /* UI CONFIG 변수 (ui_config.js에서 제어) */
   --ui-col-gap: 24px;
   --ui-stack-gap: 18px;
   --ui-label-to-value-gap: 2px;
@@ -33,7 +33,7 @@
   --rv-value-add: 0px;
 }
 
-/* 닫기 버튼 최상단 보장 (중요) */
+/* [중요] 닫기 버튼 최상단 보장 (클릭 문제 해결) */
 .close-big,
 .result-screen .screen-close,
 .month-picker .screen-close,
@@ -41,7 +41,7 @@
     position: absolute !important;
     top: 24px !important;
     right: 24px !important;
-    z-index: 2000000 !important;
+    z-index: 2000000 !important; /* z-index 최상위 */
     background: transparent !important;
     border: none !important;
     font-size: 40px !important;
@@ -140,13 +140,27 @@ body.no-scroll{ overflow: hidden; }
 .month-label{ font-size: 12px; font-weight: 700; opacity: 0.6; margin-bottom: 8px; }
 .month-btn{ width:100%; border: 2px solid #000; border-radius: 999px; padding: 12px 12px; background:#fff; font-weight: 900; cursor:pointer; font-size:16px; }
 
+/* MANUAL INPUT */
+.manual-group { margin-top: 10px; }
+.manual-row { display: flex; gap: 12px; margin-bottom: 16px; width: 100%; }
+.manual-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.manual-label { font-size: 11px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+.big-input { width: 100%; height: 52px; background: #f4f4f4; border: 2px solid transparent; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 800; color: #000; padding: 0 16px; outline: none; box-sizing: border-box; -webkit-appearance: none; transition: border 0.15s, background 0.15s; }
+.big-input:focus { background: #fff; border-color: #000; }
+.big-input::placeholder { color: #ccc; }
+.pace-wrapper { display: flex; align-items: center; gap: 6px; }
+.big-input.center-text { text-align: center; padding: 0; }
+.pace-colon { font-size: 20px; font-weight: 900; color: #000; margin-top: -2px; }
+.black-btn { width: 100%; height: 52px; background: #000; color: #fff; border: none; border-radius: 999px; font-size: 16px; font-weight: 800; margin-top: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+.black-btn:active { transform: scale(0.98); }
+
 /* PREVIEW */
 .preview{ border: 2px solid #000; border-radius: 18px; padding: 18px 18px 16px 18px; width: min(240px, 100%); background:#fff; overflow: hidden; transition: color 0.1s; }
 .preview.bg-white, .result-screen.bg-white { background:#fff !important; color:#000; }
 .preview.bg-black, .result-screen.bg-black { background:#000 !important; color:#fff; }
 .preview.type2 { width: 100% !important; max-width: 100% !important; }
 
-/* Typography */
+/* Common Typography */
 .result-label, .data-label, .m-label, .m1-item .m-label, .monthly-type1 .m1-item .m-label {
     font-family: inherit; 
     font-size: var(--ui-label-size) !important; 
@@ -164,6 +178,17 @@ body.no-scroll{ overflow: hidden; }
     align-items:flex-end;
 }
 .result-value > span, .data-value > span { display:inline-block; transform-origin: left bottom; }
+
+/* [NEW] Distance Right Align Class for Animation */
+.dist-anim-row {
+    display: flex !important;
+    align-items: baseline;
+    justify-content: flex-end; /* 우측 정렬로 KM 고정 */
+    width: 100%;
+}
+.dist-num {
+    font-variant-numeric: tabular-nums;
+}
 
 /* 1. Daily Type 1 (Stack) */
 .preview.type1 .preview-content, 
@@ -191,6 +216,7 @@ body.no-scroll{ overflow: hidden; }
     white-space: nowrap; display:block; 
 }
 .m1-stack { display: flex; flex-direction: column; gap: var(--ui-stack-gap) !important; width: 100%; align-items: flex-start; }
+/* M1 Items: Label Left, Value Right logic if needed, but standard is stack */
 .m1-item { display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; width: 100%; gap: 0; }
 .m1-item .m-label { 
     width: 60px; min-width: 60px; 
@@ -224,13 +250,6 @@ body.no-scroll{ overflow: hidden; }
 .align-center .preview-content, .align-center .result-block { justify-content: center; }
 .align-center .result-value, .align-center .data-value { justify-content: center; width: 100%; }
 .align-center .result-value > span, .align-center .data-value > span { transform-origin: center bottom; }
-
-/* [NEW] Distance Right Align Class */
-.dist-right-flex {
-    display: flex !important;
-    justify-content: flex-end !important;
-    width: 100% !important;
-}
 
 /* FONT MAPPING */
 .font-anton .result-value, .font-anton .m1-distance-value, .font-anton .m2-distance-value { font-family:'Anton', sans-serif !important; }
@@ -281,6 +300,7 @@ body.no-scroll{ overflow: hidden; }
 .gc-sub{ margin-top: 10px; font-size: 34px; font-weight: 400; letter-spacing: -0.6px; }
 .garmin-login-form{ margin-top: 60px; width: min(520px, 100%); }
 .gc-input{ width:100%; border:none; border-bottom: 2px solid #000; padding: 10px 2px; font-size: 16px; font-weight: 700; outline:none; background:transparent; margin-bottom: 26px; }
+.gc-input::placeholder { color: #000; opacity: 1; }
 .gc-note{ display:flex; gap: 10px; align-items:flex-start; margin-top: 4px; }
 .gc-cta{ position:absolute; left: 24px; right: 24px; bottom: 22px; height: 56px; border-radius: 999px; border:none; background:#000; color:#fff; font-size: 20px; font-weight: 900; cursor:pointer; }
 
