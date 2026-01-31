@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>RUNIMATE v2.2 (Final Clean)</title>
+  <title>RUNIMATE v2.4 (Layout & Format Fixed)</title>
   
   <link rel="stylesheet" href="./styles.css" />
  
@@ -24,7 +24,7 @@
       <a class="title title-link" href="#" onclick="window.location.reload(); return false;" title="새로고침">
         RUNIMATE 
       </a>
-      <span class="version" id="btnHiddenManual">v.2.2</span>
+      <span class="version" id="btnHiddenManual">v.2.4</span>
       <div class="author">by JS @runarchive.js</div>
     </header>
 
@@ -123,7 +123,7 @@
           <div id="manual-input-container" class="manual-group">
             <div class="manual-row">
               <div class="manual-col">
-                <label class="manual-label">DISTANCE (KM)</label>
+                <label class="manual-label">DISTANCE (Km)</label>
                 <input type="number" id="inputDistance" class="big-input" placeholder="00.00" inputmode="decimal" step="0.01">
               </div>
               <div class="manual-col">
@@ -375,15 +375,18 @@
     import { applyUIConfigToRoot } from './ui_config.js';
 
     const $ = (s) => document.querySelector(s);
+    const safelyGet = (id) => document.getElementById(id);
     const pad2 = (n) => String(n).padStart(2, '0');
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-    // [MODIFIED] KM 대문자 고정, 월간 00.0, 데일리 00.00
+    // [포맷팅 함수 수정됨]
     function fmtKmPreview(km, isMonthly) {
         const val = Number(km || 0);
         if (isMonthly) {
-            return `${val.toFixed(1).padStart(4, '0')}KM`; // 05.2KM
+            // 소수점 1자리 + 4글자(00.0) + KM
+            return `${val.toFixed(1).padStart(4, '0')}KM`;
         }
+        // Daily: 소수점 2자리 + KM
         return `${val.toFixed(2)}KM`; 
     }
 
@@ -436,7 +439,6 @@
       });
     }
 
-    // --- STATE ---
     const today = new Date(); 
     const state = {
       recordType: 'daily', dataType: null, font: 'anton', layout: 'type1', bg: 'white', align: 'left', fontColor: 'auto',
@@ -476,7 +478,6 @@
       }
     });
 
-    // --- ELEMENTS ---
     const el = {
       btnDaily: $('#btnDaily'), btnMonthly: $('#btnMonthly'),
       dataPanelHead: $('#dataPanelHead'), dataTabsDaily: $('#dataTabsDaily'),
@@ -577,6 +578,7 @@
       }
 
       applyPreviewStyles();
+      
       requestAnimationFrame(() => {
           applyFitPreview();
           if(hasData) triggerPreRender();
@@ -698,13 +700,8 @@
              if(el.garminConnectBtnWrap) el.garminConnectBtnWrap.style.display = 'none';
              if(el.garminCard) el.garminCard.style.display = 'flex';
              closeScreen('garminLoginScreen');
-             
-             // [FIX] Monthly: No list select, just show card
-             if (state.recordType === 'monthly') {
-                 // Do nothing else, card already updated
-             } else {
-                 renderWorkoutList('garmin'); openScreen('garminSelectScreen');
-             }
+             renderWorkoutList('garmin');
+             openScreen('garminSelectScreen');
           } else {
              if(errorMsg) { errorMsg.textContent = "Login success, but no activities found."; errorMsg.style.display = 'block'; }
           }
@@ -823,22 +820,32 @@
 
       if (!isDaily) {
          el.alignControlPanel.classList.add('disabled');
-         const btnFlip = document.querySelector('button[data-font="flip"]');
-         if(btnFlip) {
-             btnFlip.disabled = true;
-             btnFlip.style.opacity = '0.3';
-             btnFlip.style.pointerEvents = 'none';
-             if(state.font === 'flip') {
-                 state.font = 'anton';
-                 applyFont();
-             }
-         }
       } else {
          el.alignControlPanel.classList.remove('disabled');
-         const btnFlip = document.querySelector('button[data-font="flip"]');
-         if(btnFlip) { btnFlip.disabled = false; btnFlip.style.opacity = '1'; btnFlip.style.pointerEvents = 'auto'; }
       }
-      
+
+      // [NEW] Flip Font Button Disable/Enable Logic for Monthly Mode
+      const btnFlip = document.querySelector('button[data-font="flip"]');
+      if(btnFlip) {
+          if(!isDaily) {
+              // Monthly Mode: Disable Flip
+              btnFlip.disabled = true;
+              btnFlip.style.opacity = '0.3';
+              btnFlip.style.pointerEvents = 'none';
+              // 만약 현재 폰트가 flip이면 다른 폰트로 강제 변경 (예: anton)
+              if(state.font === 'flip') {
+                  state.font = 'anton';
+                  // UI 업데이트를 위해 applyFont 호출
+                  applyFont();
+              }
+          } else {
+              // Daily Mode: Enable Flip
+              btnFlip.disabled = false;
+              btnFlip.style.opacity = '1';
+              btnFlip.style.pointerEvents = 'auto';
+          }
+      }
+
       if(!isDaily) {
           el.dataEmpty.style.display = 'none';
           if(el.dataPanelHead) el.dataPanelHead.style.display = 'none';
@@ -980,10 +987,19 @@
                     const km = Number(result.km || 0); const pMin = Number(result.paceMin || 0); const pSec = Number(result.paceSec || 0);
                     const tH = Number(result.timeH || 0); const tM = Number(result.timeM || 0); const tS = Number(result.timeS || 0);
                     const pace = (pMin * 60) + pSec; const time = (tH * 3600) + (tM * 60) + tS;
-                    if (state.recordType === 'daily') { state.daily.km = km; state.daily.paceSec = pace; state.daily.timeSec = time; } else { state.monthly.km = km; state.monthly.paceSec = pace; state.monthly.timeSec = time; if (result.runs) state.monthly.runs = result.runs; }
+                    
+                    if (state.recordType === 'daily') {
+                        state.daily.km = km; state.daily.paceSec = pace; state.daily.timeSec = time;
+                    } else {
+                        state.monthly.km = km; state.monthly.paceSec = pace; state.monthly.timeSec = time;
+                        if (result.runs) state.monthly.runs = result.runs;
+                    }
                     state.dataType = 'nrc'; applyDataType(); updatePreview();
                     if (el.ocrStatus) { el.ocrStatus.textContent = 'DONE!'; el.ocrStatus.style.color = '#00C800'; }
-                } catch (err) { console.error(err); if (el.ocrStatus) { el.ocrStatus.textContent = 'Error: ' + err.message; el.ocrStatus.style.color = 'red'; } }
+                } catch (err) {
+                    console.error(err);
+                    if (el.ocrStatus) { el.ocrStatus.textContent = 'Error: ' + err.message; el.ocrStatus.style.color = 'red'; }
+                }
             };
             reader.readAsDataURL(file);
         });
@@ -1116,8 +1132,10 @@
         }
     }
     
+    // 페이지 로드 시 코드 체크 실행
     checkStravaCode();
     
+    // [추가] 스트라바 리스트 버튼(햄버거) 클릭 이벤트
     if(el.btnStravaList) {
         el.btnStravaList.addEventListener('click', (e) => {
              e.stopPropagation(); 
@@ -1129,6 +1147,7 @@
     // --- RUN BUTTON: Result ---
     function buildResultDOM() {
        el.resultWrap.className = `result-wrap ${state.layout}`;
+       // Add Align class
        if (state.recordType === 'daily') {
            el.resultWrap.classList.add(`align-${state.align}`);
        } else {
@@ -1171,6 +1190,7 @@
       }
     }
     
+    // Result 너비 동기화 (프리뷰 기준)
     function lockFitResultTransforms(target, state) {
       const rvDistance = $('#rvDistance'); const rvPace = $('#rvPace'); const rvTime = $('#rvTime'); const rvRuns = $('#rvRuns');
       const syncWidth = (rvEl, pvId) => {
@@ -1179,7 +1199,7 @@
           if (pvEl) {
               const w = pvEl.getBoundingClientRect().width; 
               rvEl.style.width = w + 'px'; rvEl.style.display = 'inline-block'; rvEl.style.whiteSpace = 'nowrap';
-              if(state.align === 'center' && state.recordType === 'daily') rvEl.style.textAlign = 'center'; else rvEl.style.textAlign = 'left';
+              if(state.align === 'center' && state.recordType === 'daily') { rvEl.style.textAlign = 'center'; } else { rvEl.style.textAlign = 'left'; }
           }
       };
       if (state.recordType === 'daily') { syncWidth(rvDistance, 'pvDistanceDaily'); syncWidth(rvPace, 'pvPaceDaily'); syncWidth(rvTime, 'pvTimeDaily'); } 
