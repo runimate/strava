@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>RUNIMATE v2.2</title>
+  <title>RUNIMATE v2.3 (Final Fix)</title>
   
   <link rel="stylesheet" href="./styles.css" />
  
@@ -16,10 +16,8 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./img/apple-touch-icon.png" />
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#ffffff" />
+  
   <style>
-    /* =========================================
-       [CSS] 원본 스타일 100% 유지
-       ========================================= */
     :root {
       --ui-label-size: 12px;
       --ui-value-size: 34px;
@@ -92,25 +90,11 @@
     }
     
     /* Select Workout 화면 레이아웃 (잘림 방지) */
-    #garminSelectScreen .select-wrap {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        overflow: hidden; 
-    }
-    
-    #garminSelectScreen .select-list {
-        flex: 1;
-        overflow-y: auto;
-        padding-bottom: 150px; 
-        width: 100%;
-        -webkit-overflow-scrolling: touch; 
-    }
+    #garminSelectScreen .select-wrap { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    #garminSelectScreen .select-list { flex: 1; overflow-y: auto; padding-bottom: 150px; width: 100%; -webkit-overflow-scrolling: touch; }
 
     /* .show 클래스가 붙어야만 보이도록 설정 */
-    #garminLoginScreen.show, #stravaLoginScreen.show, #garminSelectScreen.show, #monthPickerScreen.show, #resultScreen.show, #colorPickerOverlay.show { 
-        display: flex !important; 
-    }
+    #garminLoginScreen.show, #stravaLoginScreen.show, #garminSelectScreen.show, #monthPickerScreen.show, #resultScreen.show, #colorPickerOverlay.show { display: flex !important; }
     
     #garminLoginScreen { background-color: var(--garmin, #76B6FF) !important; }
     .gc-input::placeholder { color: #000 !important; opacity: 1 !important; }
@@ -123,7 +107,10 @@
     .result-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 26px; box-sizing: border-box; }
     .result-block { width: 100%; }
     .data-empty { min-height: 20px; }
-    .screen-close { cursor: pointer; z-index: 999999; }
+    
+    /* [수정] 닫기 버튼 z-index와 포인터 이벤트 보장 */
+    .screen-close { cursor: pointer; z-index: 999999 !important; position: absolute; top: 16px; right: 16px; width: 50px; height: 50px; background: transparent; border: none; font-size: 30px; display: flex; align-items: center; justify-content: center; }
+    
     .w-date, .garmin-date { font-size: 12px !important; font-weight: 900 !important; color: #000; }
 
     .data-tabs { display: flex; width: 100%; gap: 10px !important; }
@@ -154,32 +141,8 @@
     .black-btn:active { transform: scale(0.98); }
 
     /* [추가] Action Buttons Style (초기엔 숨김) */
-    .preview-actions { 
-        display: none; /* 데이터 로드 전에는 안 보임 */
-        gap: 12px; 
-        margin-top: 30px; 
-        width: 100%; 
-        justify-content: center; 
-        position: relative;
-        z-index: 50; 
-    }
-    .action-btn-pill { 
-        flex: 1; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 8px; 
-        height: 52px; 
-        background: #F4F4F4; 
-        border: none; 
-        border-radius: 999px; 
-        font-size: 14px; 
-        font-weight: 800; 
-        cursor: pointer; 
-        color: #000; 
-        transition: background 0.2s, transform 0.1s;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
+    .preview-actions { display: none; gap: 12px; margin-top: 30px; width: 100%; justify-content: center; position: relative; z-index: 50; }
+    .action-btn-pill { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; background: #F4F4F4; border: none; border-radius: 999px; font-size: 14px; font-weight: 800; cursor: pointer; color: #000; transition: background 0.2s, transform 0.1s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .action-btn-pill:active { background: #E0E0E0; transform: scale(0.98); }
     .action-btn-pill svg { width: 20px; height: 20px; stroke-width: 2.5px; }
   </style>
@@ -191,7 +154,7 @@
       <a class="title title-link" href="#" onclick="window.location.reload(); return false;" title="새로고침">
         RUNIMATE 
       </a>
-      <span class="version" id="btnHiddenManual">v.2.2</span>
+      <span class="version" id="btnHiddenManual">v.2.3</span>
       <div class="author">by JS @runarchive.js</div>
     </header>
 
@@ -945,6 +908,7 @@
              state.garmin = realGarminWorkouts[0];
              state.dataType = 'garmin';
              
+             // [FIX] Monthly Logic: Skip Select Workout
              if (state.recordType === 'monthly') {
                  closeScreen('garminLoginScreen');
                  if(el.garminConnectBtnWrap) el.garminConnectBtnWrap.style.display = 'none'; 
@@ -990,6 +954,7 @@
                       if(el.stravaConnectBtnWrap) el.stravaConnectBtnWrap.setAttribute('style', 'display: none !important');
                       if(el.stravaCard) el.stravaCard.style.display = 'flex';
                       
+                      // [FIX] Monthly Logic: Skip Select Workout
                       if (state.recordType === 'monthly') {
                           closeScreen('stravaLoginScreen');
                           applyDataType();
