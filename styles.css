@@ -139,6 +139,7 @@ body.no-scroll{ overflow: hidden; }
 
 /* DATA PANEL */
 .data-panel{ border: 1.5px solid #d9d9d9; border-radius: 18px; padding: 14px; background:#fff; }
+.data-panel.monthly{ padding-top: 12px; }
 .data-panel-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 10px; }
 .data-panel-title{ font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4px; }
 
@@ -157,9 +158,9 @@ body.no-scroll{ overflow: hidden; }
 
 /* DATA CARDS & ITEMS */
 .garmin-card, .workout-item{ width: 100%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; border: 2px solid #000; border-radius: 14px; padding: 10px 12px; background:#fff; cursor:pointer; margin-bottom: 10px; }
-.garmin-card-left, .w-left{ display:flex; flex-direction:column; gap: 6px; }
+.garmin-card-left, .w-left{ display:flex; flex-direction:column; gap: 6px; min-width:0; }
 .garmin-stats, .w-stats{ display:flex; gap: 14px; align-items: baseline; }
-.garmin-stat, .w-stats span{ font-size: 14px; font-weight: 900; }
+.garmin-stat, .w-stats span{ font-size: 14px; font-weight: 900; white-space: nowrap; }
 .garmin-date, .w-date{ font-size: 12px; font-weight: 900; }
 .upload-btn{ width:100%; border:none; border-radius: 999px; background:#000; color: var(--nrc); font-weight: 900; height: var(--btn-h); padding: 0 14px; display:flex; align-items:center; justify-content:center; cursor:pointer; margin-top:10px; }
 .sub-title{ font-size: 12px; font-weight: 900; margin: 0 0 10px 0; }
@@ -187,7 +188,7 @@ body.no-scroll{ overflow: hidden; }
 /* MONTH PICKER */
 .month-block{ margin-top: 12px; display:flex; flex-direction:column; align-items: center; justify-content: center; margin-bottom: 24px; }
 .month-label{ font-size: 12px; font-weight: 700; opacity: 0.6; margin-bottom: 8px; }
-.month-btn{ width:100%; border: 2px solid #000; border-radius: 30px; height: 42px; display:flex; align-items:center; justify-content:center; background:#fff; color:#000; font-weight: 900; cursor:pointer; font-size:16px; }
+.month-btn{ width:100%; border: 2px solid #000; border-radius: 999px; padding: 12px 12px; background:#fff; font-weight: 900; cursor:pointer; font-size:16px; }
 
 /* PREVIEW CONTAINER */
 .preview{ border: 2px solid #000; border-radius: 18px; padding: 18px 18px 16px 18px; width: min(240px, 100%); background:#fff; overflow: hidden; transition: color 0.1s; }
@@ -420,7 +421,7 @@ body.no-scroll{ overflow: hidden; }
 .month-year{ min-width: 96px; text-align:center; font-size: 32px; font-weight: 1000; letter-spacing: -0.8px; }
 .month-nav{ width: 44px; height: 42px; border: 2px solid #000; border-radius: 999px; background:#fff; color:#000; appearance:none; font-size: 26px; font-weight: 900; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .month-grid{ display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 6px; }
-.month-cell{ color:#000; appearance:none; border: 2px solid #000; border-radius: 16px; padding: 14px 12px; background:#fff; font-weight: 900; cursor:pointer; }
+.month-cell{ border: var(--stroke) solid #000; border-radius: 16px; padding: 14px 12px; background:#fff; font-weight: 900; cursor:pointer; }
 .month-cell.active{ background:#000; color:#fff; }
 
 /* Result Screen */
@@ -564,13 +565,4 @@ body.no-scroll{ overflow: hidden; }
   font-variant-numeric: tabular-nums; /* 숫자 너비 고정 (떨림 방지) */
 }
 
-.dist-unit-fade {
-  opacity: 0;
-  transform: translateX(-5px); /* 약간 왼쪽에서 */
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.dist-unit-fade.visible {
-  opacity: 1;
-  transform: translateX(0); /* 제자리로 */
-}
+/* No dissolve animation requested - remove animation styles */
